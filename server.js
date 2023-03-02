@@ -12,6 +12,8 @@ app.use(bodyParser.json());
 
 app.use('/api', apiRouter);
 
+// it retrieves an element from the database using provided id in req.params
+
 apiRouter.param('userId', async (req, res, next, id) => {
     try {
         const user = await db.query(
@@ -32,6 +34,10 @@ apiRouter.param('userId', async (req, res, next, id) => {
     }
 })
 
+
+
+// it handles requests about users
+
 apiRouter.get('/users/:userId', (req, res) => {
     res.send(req.user);
 })
@@ -50,14 +56,13 @@ apiRouter.get('/users', async (req, res) => {
 apiRouter.put('/users/:userId', async (req, res) => {
     try {
         if (req.query.name && req.query.email && req.query.age) {
-            console.log(req.query.name, req.query.email, req.query.age);
             const result = await db.query(
                 `
             UPDATE users
-            SET name = ${req.query.name},
-            email = ${req.query.email},
+            SET name = '${req.query.name}',
+            email = '${req.query.email}',
             age = ${req.query.age}
-            WHERE id = ${req.user.id}`);
+            WHERE id = ${req.user[0].id}`);
             res.status(200).send();
         }
         else {
@@ -88,7 +93,6 @@ apiRouter.post('/users', (req, res) => {
 })
 
 apiRouter.post('/users/signup', async (req, res) => {
-    console.log(req.body);
     try {
         if (req.body.name && req.body.email && req.body.age && req.body.password) {
             if (req.body.password.length < 8) {
@@ -96,13 +100,32 @@ apiRouter.post('/users/signup', async (req, res) => {
             }
             const result = await db.query(`
             INSERT INTO users (name, email, age, password)
-            VALUES (${req.body.name}, ${req.body.email}, ${req.body.age}, ${req.body.password})`);
+            VALUES ('${req.body.name}', '${req.body.email}', ${req.body.age}, '${req.body.password}')`);
             res.status(200).send(`The user '${req.body.name}' is created`);
         }
     }
     catch (error) {
-        // console.error(error);
+        console.error(error);
         res.status(400).send(`Error creating the user`);
+    }
+})
+
+apiRouter.get('/chats', async (req, res) => {
+    try {
+        const result = await db.query(`SELECT * FROM chats`);
+        res.send(result.rows);
+    }
+    catch (error) {
+        res.status(404).send(`Error retrieving the data from the 'chats' table`);
+    }
+})
+
+apiRouter.post('/chats', async (req, res) => {
+    try {
+        res.send('ok');
+    }
+    catch (error) {
+        res.status(400).send(`Error creating a new chat`);
     }
 })
 
