@@ -4,8 +4,6 @@ const db = require('./db');
 const app = express();
 const apiRouter = express.Router();
 
-let users = [{ id: 1, name: 'Nathan', age: 36, email: 'nathan-adventure4@gmail.com', staff: false }, { id: 2, name: 'Sam', age: 41, email: 'sam-charismatic@gmail.com', staff: false }];
-
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(bodyParser.json());
@@ -144,6 +142,7 @@ apiRouter.get('/chats', async (req, res) => {
     }
 })
 
+
 apiRouter.post('/chats/:user1_id/:user2_id', async (req, res) => {
     try {
         console.log(req.user1, req.user2);
@@ -157,7 +156,6 @@ apiRouter.post('/chats/:user1_id/:user2_id', async (req, res) => {
         res.status(400).send(`Error creating a new chat`);
     }
 })
-
 
 const port = 4001;
 
