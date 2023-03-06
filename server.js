@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const { hashPassword, isPasswordValid } = require('./encrypt_utils');
+const bcrypt = require('bcrypt');
 const db = require('./db');
 const app = express();
 const apiRouter = express.Router();
@@ -53,7 +54,7 @@ apiRouter.param('user1_id', async (req, res, next, id) => {
     }
     catch (error) {
         console.error(error);
-        res.status(404).send(`Error retrieving the user from database`);
+        res.status(500).send(`Error retrieving the user from database`);
     }
 })
 
@@ -74,7 +75,7 @@ apiRouter.param('user2_id', async (req, res, next, id) => {
     }
     catch (error) {
         console.error(error);
-        res.status(404).send(`Error retrieving the user from database`);
+        res.status(500).send(`Error retrieving the user from database`);
     }
 })
 
@@ -108,12 +109,12 @@ apiRouter.put('/users/:userId', async (req, res) => {
             res.status(200).send();
         }
         else {
-            res.status(404).send(`There are no all required fields in query`);
+            res.status(400).send(`There are no all required fields in query`);
         }
     }
     catch (error) {
         console.error(error);
-        res.status(400).send(`Error updating the user in database`);
+        res.status(500).send(`Error updating the user in database`);
     }
 })
 
@@ -124,11 +125,11 @@ apiRouter.post('/users/signup', async (req, res) => {
 
             //check if the provided password do not have less than 8 chars
             if (isPasswordValid(password)) {
-                const hashedPassword = await bcrypt.hash(password, 10, (err, hash) => hash);
+                const hashedPassword = await bcrypt.hash(password, 10);
                 // convert hashed password from string to binary
                 await db.query(`
                 INSERT INTO users (username, email, age, hashed_password)
-                VALUES ('${username}', '${email}', ${age}, '${hashedPassword}'`);
+                VALUES ('${username}', '${email}', ${age}, '${hashedPassword}')`);
                 res.status(200).send(`The user '${username}' is created`);
             }
             else {
@@ -141,16 +142,17 @@ apiRouter.post('/users/signup', async (req, res) => {
     }
     catch (error) {
         console.error(error);
-        res.status(400).send(`Error creating the user`);
+        res.status(500).send(`Error creating the user`);
     }
 })
 
-apiRouter.put('/users/login', async (req, res, next) => {
+apiRouter.post('/users/login', async (req, res, next) => {
     try {
         if (req.body.email && req.body.password) {
             const { email, password } = req.body;
-            const hashed_password = await db.query(`SELECT hashed_password FROM users WHERE email = '${email}'`);
-            const validPass = await bcrypt.compare(password, hashPassword);
+            const result = await db.query(`SELECT username, hashed_password FROM users WHERE email = '${email}'`);
+            const { username, hashed_password } = result.rows[0];
+            const validPass = await bcrypt.compare(password, hashed_password);
 
             if (validPass) {
                 await db.query(`
@@ -176,7 +178,7 @@ apiRouter.get('/chats', async (req, res) => {
         res.send(result.rows);
     }
     catch (error) {
-        res.status(404).send(`Error retrieving the data from the 'chats' table`);
+        res.status(500).send(`Error retrieving the data from the 'chats' table`);
     }
 })
 
@@ -191,7 +193,7 @@ apiRouter.post('/chats/:user1_id/:user2_id', async (req, res) => {
     }
     catch (error) {
         console.error(error);
-        res.status(400).send(`Error creating a new chat`);
+        res.status(500).send(`Error creating a new chat`);
     }
 })
 
