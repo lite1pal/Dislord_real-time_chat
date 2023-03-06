@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const { hashPassword, isPasswordValid } = require('./encrypt_utils');
 const db = require('./db');
 const app = express();
 const apiRouter = express.Router();
@@ -7,6 +8,8 @@ const apiRouter = express.Router();
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(bodyParser.json());
+
+
 
 app.use('/api', apiRouter);
 
@@ -116,19 +119,54 @@ apiRouter.put('/users/:userId', async (req, res) => {
 
 apiRouter.post('/users/signup', async (req, res) => {
     try {
-        if (req.body.name && req.body.email && req.body.age && req.body.password) {
-            if (req.body.password.length < 8) {
-                res.status(400).send(`Password does not has to be lower than 8 digits`);
+        if (req.body.username && req.body.email && req.body.age && req.body.password) {
+            const { username, email, age, password } = req.body;
+
+            //check if the provided password do not have less than 8 chars
+            if (isPasswordValid(password)) {
+                const hashedPassword = await bcrypt.hash(password, 10, (err, hash) => hash);
+                // convert hashed password from string to binary
+                await db.query(`
+                INSERT INTO users (username, email, age, hashed_password)
+                VALUES ('${username}', '${email}', ${age}, '${hashedPassword}'`);
+                res.status(200).send(`The user '${username}' is created`);
             }
-            const result = await db.query(`
-            INSERT INTO users (name, email, age, password)
-            VALUES ('${req.body.name}', '${req.body.email}', ${req.body.age}, '${req.body.password}')`);
-            res.status(200).send(`The user '${req.body.name}' is created`);
+            else {
+                res.status(400).send(`Password has to be 8 chars or higher`);
+            }
+        }
+        else {
+            res.status(400).send(`Recheck if all required fields were sent`);
         }
     }
     catch (error) {
         console.error(error);
         res.status(400).send(`Error creating the user`);
+    }
+})
+
+apiRouter.put('/users/login', async (req, res, next) => {
+    try {
+        if (req.body.email && req.body.password) {
+            const { email, password } = req.body;
+            const hashed_password = await db.query(`SELECT hashed_password FROM users WHERE email = '${email}'`);
+            const validPass = await bcrypt.compare(password, hashPassword);
+
+            if (validPass) {
+                await db.query(`
+                UPDATE users
+                SET logged_in = true
+                WHERE email = '${email}'`);
+                res.status(200).send(`The user ${username} was logged_in!`);
+            }
+            else {
+                res.status(400).send(`Password is not valid`);
+            }
+        }
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).send('Error logging the user in');
     }
 })
 
