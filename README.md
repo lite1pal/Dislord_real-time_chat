@@ -1,6 +1,6 @@
 # Project Title: Dislord
 ## Project description
-Dislord is an open-source, (real-time in future) chat application built with NodeJS, ExpressJS and React. It allows users to create chats and send messages. The project implementes signup and login system.
+Dislord is an open-source, (real-time in future) chat application built with NodeJS, ExpressJS and React. It allows users to create chats and send messages. The project implements signup and login system.
 ## Main features
 - User authentication: users can sign up, log in and log out securely.
 - Chats: user is able to make a chat with other one.
