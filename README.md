@@ -15,6 +15,11 @@ To get started working with Dislord, follow these steps please:
 ## The following endpoints are available in Dislord API
 | Endpoint               | Method | Description                       |
 | --------               | ------ |    -------                        |
-| */api/users*           | GET    | Retrieve users from the database  |
+| */api/users*           | GET    | Retrieve users  |
 | */api/users/:userId*    | PUT    | Update a specific user            |
-
+| */api/users/signup*      | POST  | Create a new user |
+| */api/users/login*       | POST  | Log a user in     |
+| */api/chats*    | GET   | Retrieve chats    |
+| */api/chats/:user1_id/:user2_id* | POST  | Create a new chat between 2 users |
+| */api/messages/:chatId* | GET | Retrieve messages from a chat |
+| */api/messages/:chatId/:userId* | POST | Create a new message from a user in a chat he is in |
