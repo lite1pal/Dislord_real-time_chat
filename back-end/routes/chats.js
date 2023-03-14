@@ -1,6 +1,7 @@
 const express = require('express');
 const chatsRouter = express.Router();
 
+const { getChats, createChat } = require('../db');
 const db = require('../db');
 
 chatsRouter.param('user1_id', async (req, res, next, id) => {
@@ -45,22 +46,13 @@ chatsRouter.param('user2_id', async (req, res, next, id) => {
     }
 })
 
-chatsRouter.get('/', async (req, res) => {
-    try {
-        const result = await db.query(`SELECT * FROM chats`);
-        res.send(result.rows);
-    }
-    catch (error) {
-        res.status(500).send(`Error retrieving the data from the 'chats' table`);
-    }
-})
+chatsRouter.get('/', getChats);
 
 chatsRouter.post('/:user1_id/:user2_id', async (req, res) => {
     try {
-        console.log(req.user1, req.user2);
         const result = await db.query(`
-            INSERT INTO chats (chat_id, user1_id, user2_id)
-            VALUES (2, 4, 5)`);
+            INSERT INTO chats (user1_id, user2_id)
+            VALUES (${req.params.user1_id}, ${req.params.user2_id})`);
         res.status(200).send(`Chat was successfully created`);
     }
     catch (error) {

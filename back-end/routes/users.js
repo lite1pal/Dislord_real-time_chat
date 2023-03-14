@@ -3,64 +3,13 @@ const usersRouter = express.Router();
 
 const isPasswordValid = require('../utils');
 const db = require('../db');
+const { getUsers, getSingleUser, updateSingleUser } = require('../db');
 
-usersRouter.param('userId', async (req, res, next, id) => {
-    try {
-        const user = await db.query(
-            `
-            SELECT *
-            FROM users
-            WHERE id = ${parseInt(id)}`);
-        if (user.rows.length > 0) {
-            req.user = user.rows[0];
-        }
-        else {
-            res.sendStatus(404);
-        }
-        next();
-    }
-    catch (error) {
-        console.error(error);
-        res.status(500).send(`Error retrieving the user from database`);
-    }
-})
+usersRouter.get('/:userId', getSingleUser);
 
-usersRouter.get('/:userId', (req, res) => {
-    res.send(req.user);
-})
+usersRouter.get('/', getUsers);
 
-usersRouter.get('/', async (req, res) => {
-    try {
-        const result = await db.query('SELECT username, email, age, logged_in FROM users');
-        res.send(result.rows);
-    }
-    catch (error) {
-        console.error(error);
-        res.status(500).send('Error retrieving the user from database');
-    }
-})
-
-usersRouter.put('/:userId', async (req, res) => {
-    try {
-        if (req.query.name && req.query.email && req.query.age) {
-            const result = await db.query(
-                `
-            UPDATE users
-            SET name = '${req.query.name}',
-            email = '${req.query.email}',
-            age = ${req.query.age}
-            WHERE id = ${req.user.id}`);
-            res.status(200).send();
-        }
-        else {
-            res.status(400).send(`There are no all required fields in query`);
-        }
-    }
-    catch (error) {
-        console.error(error);
-        res.status(500).send(`Error updating the user in database`);
-    }
-})
+usersRouter.put('/:userId', updateSingleUser);
 
 usersRouter.post('/signup', async (req, res) => {
     try {
