@@ -1,7 +1,7 @@
 const express = require('express');
 const chatsRouter = express.Router();
 
-const db = require('./db');
+const db = require('../db');
 
 chatsRouter.param('user1_id', async (req, res, next, id) => {
     try {

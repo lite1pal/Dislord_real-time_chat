@@ -1,23 +1,6 @@
 const express = require('express');
-const db = require('./db');
+const db = require('../db');
 const messagesRouter = express.Router();
-
-
-// messagesRouter.param('chatId', async (req, res, next, id) => {
-//     try {
-//         const response = await db.query(`
-//         SELECT *
-//         FROM chats
-//         WHERE chat_id = ${parseInt(id)}
-//         `)
-//         req.chat = response.rows[0];
-//         next();
-//     }
-//     catch (error) {
-//         console.error(error);
-//         res.status(500).send('Error finding the index of the chat');
-//     }
-// })
 
 messagesRouter.get('/:chatId', async (req, res, next) => {
     try {

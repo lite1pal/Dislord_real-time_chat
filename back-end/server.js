@@ -2,15 +2,12 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 
-const usersRouter = require('./users');
-const chatsRouter = require('./chats');
-const messagesRouter = require('./messages');
+const usersRouter = require('./routes/users');
+const chatsRouter = require('./routes/chats');
+const messagesRouter = require('./routes/messages');
 
 app.use(bodyParser.urlencoded({ extended: false }));
-
 app.use(bodyParser.json());
-
-// it handles requests about users
 
 app.use('/api/users', usersRouter);
 

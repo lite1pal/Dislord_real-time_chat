@@ -1,8 +1,8 @@
 const express = require('express');
 const usersRouter = express.Router();
 
-const isPasswordValid = require('./utils');
-const db = require('./db');
+const isPasswordValid = require('../utils');
+const db = require('../db');
 
 usersRouter.param('userId', async (req, res, next, id) => {
     try {
