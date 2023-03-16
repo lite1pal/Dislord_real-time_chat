@@ -1,25 +1,25 @@
-import logo from './logo.svg';
+import React, { useState } from 'react';
 import './App.css';
 
-function App() {
+export function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="main">
+      <div className="ChatZone">
+        <div className="Search">
+          <input type="text" placeholder=" Find or start a conversation" />
+        </div>
+        <hr />
+        <br />
+        <div className="Chats">
+          <div id="CreateField">
+            <p>DIRECT MESSAGES</p>
+            {/* <input id='createChat' type="submit" value="+" /> */}
+            <i class="fas fa-cloud"></i>
+          </div>
+          <div className="Chat">
+          </div>
+        </div>
+      </div>
     </div>
-  );
+  )
 }
-
-export default App;

@@ -1,22 +1,10 @@
-const express = require('express');
-const app = express();
-const bodyParser = require('body-parser');
+const http = require('http');
+const app = require('./app');
+const server = http.createServer(app);
 
-const usersRouter = require('./routes/users');
-const chatsRouter = require('./routes/chats');
-const messagesRouter = require('./routes/messages');
+const { API_PORT } = process.env;
+const port = process.env.PORT || API_PORT;
 
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-
-app.use('/api/users', usersRouter);
-
-app.use('/api/chats', chatsRouter);
-
-app.use('/api/messages', messagesRouter);
-
-const port = 4001;
-
-app.listen(port, () => {
+server.listen(port, () => {
     console.log(`The server is on http://localhost:${port}`);
 })

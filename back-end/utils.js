@@ -1,11 +1,4 @@
-const bcrypt = require('bcrypt');
-const saltRounds = 10;
-
-const hashPassword = async (password) => {
-    const salt = await bcrypt.genSalt(saltRounds);
-    const hash = await bcrypt.hash(password, salt);
-    return [hash, salt];
-}
+const jwt = require('jsonwebtoken');
 
 const isPasswordValid = (password) => {
     if (password.length < 8) {
@@ -14,9 +7,21 @@ const isPasswordValid = (password) => {
     return true;
 }
 
-const isUserLoggedIn = (req, res, next) => {
-    console.log('test');
+const auth = (req, res, next) => {
+    const token = req.cookies.token;
+    try {
+        const isToken = jwt.verify(token, process.env.TOKEN_KEY);
+        if (!isToken) {
+            res.status(400).send(`Invalid token or no token at all`);
+        }
+        next();
+    }
+    catch (error) {
+        console.error(error);
+        // res.clearCookie("token");
+        res.status(400).send(`Log in to go on`);
+    }
     next();
 }
 
-module.exports = { hashPassword, isPasswordValid };
+module.exports = { isPasswordValid, auth };
