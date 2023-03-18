@@ -11,13 +11,16 @@ export function App() {
         <hr />
         <br />
         <div className="Chats">
-          <div id="CreateField">
+          <div className="CreateField">
             <p>DIRECT MESSAGES</p>
-            {/* <input id='createChat' type="submit" value="+" /> */}
-            <i class="fas fa-cloud"></i>
           </div>
           <div className="Chat">
+            Chat 1
           </div>
+          <div className="Chat">
+            Chat 2
+          </div>
+
         </div>
       </div>
     </div>
