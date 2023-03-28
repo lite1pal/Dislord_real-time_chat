@@ -4,6 +4,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 require("dotenv").config();
+const cors = require('cors');
 
 const usersRouter = require('./routes/users');
 const chatsRouter = require('./routes/chats');
@@ -12,6 +13,7 @@ const messagesRouter = require('./routes/messages');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cookieParser());
+app.use(cors());
 
 app.use('/api/users', usersRouter);
 

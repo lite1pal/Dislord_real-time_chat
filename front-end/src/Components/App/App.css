@@ -10,11 +10,10 @@
   height: 100vh;
   margin: auto;
   background-color: #46484e;
-  border-radius: 10px;
 }
 
 .ChatZone {
-  width: 15%;
+  width: 20%;
   height: 100%;
   background-color: #36393f;
 }
@@ -27,6 +26,7 @@
 }
 
 .Search>input {
+  display: flex;
   width: 95%;
   height: 50%;
   margin: 15px;
