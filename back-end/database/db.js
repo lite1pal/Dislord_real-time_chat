@@ -2,12 +2,13 @@ const { Pool } = require('pg');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const { isPasswordValid } = require('../utils');
+require('dotenv').config();
 
 const pool = new Pool({
     user: 'postgres',
     host: 'localhost',
     database: 'discord',
-    password: 'postgres',
+    password: `postgres`,
     port: 5432
 });
 
@@ -104,10 +105,7 @@ const signUpUser = async (req, res) => {
         const newUser = rows[0];
         const token = jwt.sign(
             { user_id: newUser.id, email },
-            process.env.TOKEN_KEY,
-            {
-                expiresIn: 600
-            }
+            process.env.TOKEN_KEY
         );
         res.cookie("token", token, {
             httpOnly: true
@@ -140,10 +138,7 @@ const logInUser = async (req, res, next) => {
         }
         const token = jwt.sign(
             { user_id: userId, email },
-            process.env.TOKEN_KEY,
-            {
-                expiresIn: 600
-            }
+            process.env.TOKEN_KEY
         );
         res.cookie("token", token, {
             httpOnly: true
@@ -194,12 +189,12 @@ const createChat = async (req, res) => {
 
 const getMessagesOfChat = async (req, res, next) => {
     try {
-        const chatMessages = await db.query(`
+        const chatMessages = await query(`
         SELECT *
         FROM messages
         WHERE chat_id = ${req.params.chatId}
         `);
-        res.status(200).send(chatMessages.rows);
+        res.status(200).json(chatMessages.rows);
     }
     catch (error) {
         console.error(error);
@@ -211,7 +206,7 @@ const sendMessage = async (req, res, next) => {
     try {
         if (req.body.message) {
             const message = req.body.message;
-            await db.query(`
+            await query(`
             INSERT INTO messages (user_id, chat_id, message)
             VALUES (${req.params.userId}, ${req.params.chatId}, '${message}')
             `);

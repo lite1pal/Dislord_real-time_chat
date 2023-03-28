@@ -7,7 +7,7 @@ const Navbar = ({ url, inner, isAuth }) => {
         <div className="Navbar">
             <p>Status <strong>{isAuth ? 'logged in' : 'no logged in'}</strong></p>
             <ul>
-                <li><Link to={url}>{inner}</Link></li>
+                {url && inner ? <li><Link to={url}>{inner}</Link></li> : ""}
             </ul>
         </div>
     )

@@ -8,7 +8,6 @@ const isPasswordValid = (password) => {
 }
 
 const auth = (req, res, next) => {
-    // const token = req.cookies.token;
     const token = req.headers.authorization.split(' ')[1];
     console.log(token, process.env.TOKEN_KEY);
     try {

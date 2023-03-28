@@ -41,7 +41,7 @@ const SignUp = ({ isAuth }) => {
     };
 
     return (
-        <>
+        <div className="signup-container">
             <Navbar url={'/login'} inner={'Login'} isAuth={isAuth} />
             <div className="SignUp">
                 <h1>Sign Up</h1>
@@ -53,7 +53,7 @@ const SignUp = ({ isAuth }) => {
                     <button type='submit'>Sign up</button>
                 </form>
             </div>
-        </>
+        </div>
     )
 }
 

@@ -6,6 +6,6 @@ const { auth } = require('../utils');
 
 chatsRouter.get('/', auth, getChats);
 
-chatsRouter.post('/:user1_id/:user2_id', auth, createChat);
+chatsRouter.post('/:user1_id/:user2_id', createChat);
 
 module.exports = chatsRouter;
