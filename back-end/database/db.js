@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 const { isPasswordValid } = require("../utils");
 require("dotenv").config();
 
+// Creates the connection between the Postgres database and the NodeJS server.
 const pool = new Pool({
   user: "postgres",
   host: "localhost",
@@ -12,6 +13,7 @@ const pool = new Pool({
   port: 5432,
 });
 
+// Returns the query's response
 const query = async (text, params) => {
   const start = Date.now();
   const res = await pool.query(text, params);
@@ -20,6 +22,7 @@ const query = async (text, params) => {
   return res;
 };
 
+// Retrieves users from the Postgres database
 const getUsers = async (req, res) => {
   try {
     const { rows } = await query(
@@ -36,6 +39,7 @@ const getUsers = async (req, res) => {
   }
 };
 
+// Retrieves a single user from the Postgres database based on the provided id
 const getSingleUser = async (req, res, next) => {
   try {
     const { rows } = await query(
@@ -55,6 +59,7 @@ const getSingleUser = async (req, res, next) => {
   }
 };
 
+// Updates a single user in the Postgres database based on the provided id
 const updateSingleUser = async (req, res) => {
   try {
     if (req.query.name && req.query.email && req.query.age) {
@@ -76,6 +81,7 @@ const updateSingleUser = async (req, res) => {
   }
 };
 
+// Creates a new user, stores it in the Postgres database and signs up a new token that will identify a user afterwards.
 const signUpUser = async (req, res) => {
   try {
     const { username, email, age, password } = req.body;
@@ -118,6 +124,7 @@ const signUpUser = async (req, res) => {
 
 const logInUser = async (req, res, next) => {
   try {
+    console.log(req.body);
     const { email, password } = req.body;
     if (!(email && password)) {
       res.status(400).send(`All inputs are required`);
@@ -126,10 +133,11 @@ const logInUser = async (req, res, next) => {
       `SELECT id, username, hashed_password FROM users WHERE email = '${email}'`
     );
     const { id, username, hashed_password } = result.rows[0];
-    console.log(
-      11111111111111111111111111111111111111111111111111111111111111,
-      result.rows[0]
-    );
+    // console.log(
+    //   11111111111111111111111111111111111111111111111111111111111111,
+    //   result.rows[0]
+    // );
+    console.log(result.rows);
     const validPass = await bcrypt.compare(password, hashed_password);
 
     if (!validPass) {
@@ -140,12 +148,10 @@ const logInUser = async (req, res, next) => {
         UPDATE users
         SET token = '${token}', logged_in = true
         WHERE email = '${email}'`);
-    res
-      .status(200)
-      .json({
-        token: token,
-        user: { id: id, username: username, email: email },
-      });
+    res.status(200).json({
+      token: token,
+      user: { id: id, username: username, email: email },
+    });
   } catch (error) {
     console.error(error);
     res.status(500).send("Error logging the user in");
@@ -158,6 +164,25 @@ const getChats = async (req, res) => {
     res.send(result.rows);
   } catch (error) {
     res.status(500).send(`Error retrieving the data from the 'chats' table`);
+  }
+};
+
+const getChatsOfUser = async (req, res) => {
+  try {
+    const { user_id } = req.params;
+    if (!user_id) {
+      res.status(400).send("There is no id of the user");
+    }
+    const result = await query(`
+      SELECT * FROM chats
+      WHERE user1_id = ${user_id} OR user2_id = ${user_id}
+    `);
+    const chats = result.rows;
+    res.status(200).json(chats);
+  } catch (error) {
+    res
+      .status(500)
+      .send(`Error retrieving the data of the user from the 'chats' table `);
   }
 };
 
@@ -196,15 +221,21 @@ const getMessagesOfChat = async (req, res, next) => {
   }
 };
 
-const sendMessage = async (req, res, next) => {
+const sendMessage = async (req, res) => {
   try {
-    if (req.body.message) {
-      const message = req.body.message;
+    console.log(req.body);
+    if (req.body) {
+      const { user_id, chat_id, message } = req.body;
+      const response = await query(
+        `SELECT username FROM users WHERE id = ${user_id}`
+      );
+      const { username } = response.rows[0];
+      console.log(user_id, chat_id, message, username);
       await query(`
-            INSERT INTO messages (user_id, chat_id, message)
-            VALUES (${req.params.userId}, ${req.params.chatId}, '${message}')
+            INSERT INTO messages (user_id, chat_id, message, user_name)
+            VALUES (${user_id}, ${chat_id}, '${message}', '${username}')
             `);
-      res.status(200).send(`The message was sent!`);
+      res.status(200).json({ user_id, chat_id, message, username });
     }
   } catch (error) {
     console.error(error);
@@ -217,6 +248,7 @@ module.exports = {
   getSingleUser: getSingleUser,
   updateSingleUser: updateSingleUser,
   getChats: getChats,
+  getChatsOfUser: getChatsOfUser,
   createChat: createChat,
   signUpUser: signUpUser,
   logInUser: logInUser,

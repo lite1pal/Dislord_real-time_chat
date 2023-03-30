@@ -1,11 +1,13 @@
-const express = require('express');
+const express = require("express");
 const chatsRouter = express.Router();
 
-const { getChats, createChat } = require('../database/db');
-const { auth } = require('../utils');
+const { getChats, getChatsOfUser, createChat } = require("../database/db");
+const { auth } = require("../utils");
 
-chatsRouter.get('/', auth, getChats);
+chatsRouter.get("/", auth, getChats);
 
-chatsRouter.post('/:user1_id/:user2_id', createChat);
+chatsRouter.get("/:user_id", getChatsOfUser);
+
+chatsRouter.post("/:user1_id/:user2_id", createChat);
 
 module.exports = chatsRouter;
