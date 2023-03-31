@@ -14,41 +14,6 @@ const Navbar = ({ url, inner, isAuth, mainUser, setAuth }) => {
   };
 
   return (
-    // <div>
-    //   <p>
-    //     Status <strong>{isAuth ? "logged in" : "no logged in"}</strong>
-    //   </p>
-    //   {url && inner ? <Link to={url}>{inner}</Link> : ""}
-    //   <h2>{mainUser["username"]}</h2>
-    //   <button onClick={logOut}>Log out</button>
-    // </div>
-
-    // <nav className="flex items-center justify-between flex-wrap bg-blue-500 p-6">
-    //   <div className="flex items-center flex-shrink-0 text-white mr-6">
-    //     <span className="font-semibold text-xl tracking-tight">
-    //       {mainUser["username"]}
-    //     </span>
-    //   </div>
-    //   <div className="w-full block flex-grow lg:flex lg:items-center lg:w-auto">
-    //     <div className="text-sm lg:flex-grow">
-    //       <Link
-    //         to={url}
-    //         className="block mt-4 lg:inline-block lg:mt-0 text-white hover:text-gray-200 mr-4"
-    //       >
-    //         {inner}
-    //       </Link>
-    //     </div>
-    //     <div>
-    //       <button
-    //         className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
-    //         onClick={logOut}
-    //       >
-    //         Log out
-    //       </button>
-    //     </div>
-    //   </div>
-    // </nav>
-
     <nav className="flex items-center justify-between flex-wrap bg-gray-700 p-4 md:p-6">
       <div className="flex items-center flex-shrink-0 text-white mr-6">
         <svg
@@ -78,7 +43,7 @@ const Navbar = ({ url, inner, isAuth, mainUser, setAuth }) => {
         </div>
         <div>
           <button
-            className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
+            className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2.5  px-4 border border-gray-400 rounded shadow"
             onClick={logOut}
           >
             Log Out

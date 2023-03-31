@@ -11,6 +11,7 @@ const pool = new Pool({
   database: "neondb",
   password: "nqhN2YELgU8e",
   port: 5432,
+  ssl: { rejectUnauthorized: false },
 });
 
 // Returns the query's response
@@ -31,7 +32,7 @@ const getUsers = async (req, res) => {
     if (rows.length > 0) {
       res.status(200).json(rows);
     } else {
-      res.status(404).send(`There are no users`);
+      return res.status(404).send(`There are no users`);
     }
   } catch (error) {
     console.error(error);
@@ -51,7 +52,7 @@ const getSingleUser = async (req, res, next) => {
     if (rows.length > 0) {
       res.status(200).send(rows[0]);
     } else {
-      res.sendStatus(404);
+      return res.sendStatus(404);
     }
   } catch (error) {
     console.error(error);
@@ -73,7 +74,7 @@ const updateSingleUser = async (req, res) => {
       );
       res.status(200).send();
     } else {
-      res.status(400).send(`There are no all required fields in query`);
+      return res.status(400).send(`There are no all required fields in query`);
     }
   } catch (error) {
     console.error(error);
@@ -88,11 +89,11 @@ const signUpUser = async (req, res) => {
 
     // error handling if there were no all inputs provided
     if (!(username && email && age && password)) {
-      res.status(400).send(`All inputs are required`);
+      return res.status(400).json(`All inputs are required`);
     }
     //check if the provided password do not have less than 8 chars
     if (!isPasswordValid(password)) {
-      res.status(400).send(`Password has to be 8 chars or higher`);
+      return res.status(400).json(`Password has to be 8 chars or higher`);
     }
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -118,32 +119,35 @@ const signUpUser = async (req, res) => {
     res.status(200).json(token);
   } catch (error) {
     console.error(error);
-    res.status(500).send(`Error creating the user`);
+    res.status(500).json(`Error creating the user`);
   }
 };
 
 const logInUser = async (req, res, next) => {
   try {
-    console.log(req.body);
     const { email, password } = req.body;
     if (!(email && password)) {
-      res.status(400).send(`All inputs are required`);
+      return res.status(400).json(`All inputs are required`);
     }
     const result = await query(
       `SELECT id, username, hashed_password FROM users WHERE email = '${email}'`
     );
+    if (result.rows.length === 0) {
+      return res.status(400).json(`Invalid email`);
+    }
     const { id, username, hashed_password } = result.rows[0];
-    // console.log(
-    //   11111111111111111111111111111111111111111111111111111111111111,
-    //   result.rows[0]
-    // );
-    console.log(result.rows);
+    if (!(id && username && hashed_password)) {
+      return res.status(400).json(`Some of the select data is empty`);
+    }
     const validPass = await bcrypt.compare(password, hashed_password);
 
     if (!validPass) {
-      res.status(400).send(`Password is not valid`);
+      return res.status(400).json(`Invalid password`);
     }
     const token = jwt.sign({ user_id: id, email }, process.env.TOKEN_KEY);
+    if (!token) {
+      return res.status(400).json(`Error occured during signing a new token`);
+    }
     await query(`
         UPDATE users
         SET token = '${token}', logged_in = true
@@ -154,16 +158,7 @@ const logInUser = async (req, res, next) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).send("Error logging the user in");
-  }
-};
-
-const getChats = async (req, res) => {
-  try {
-    const result = await query(`SELECT * FROM chats`);
-    res.send(result.rows);
-  } catch (error) {
-    res.status(500).send(`Error retrieving the data from the 'chats' table`);
+    res.status(500).json("Error logging the user in");
   }
 };
 
@@ -171,44 +166,58 @@ const getChatsOfUser = async (req, res) => {
   try {
     const { user_id } = req.params;
     if (!user_id) {
-      res.status(400).send("There is no id of the user");
+      return res.status(400).json("There is no id of the user");
     }
     const result = await query(`
       SELECT * FROM chats
       WHERE user1_id = ${user_id} OR user2_id = ${user_id}
     `);
+    console.log(result.rows);
+    if (result.rows.length === 0) {
+      return res.status(400).json(`There are no chats with this user`);
+    }
     const chats = result.rows;
     res.status(200).json(chats);
   } catch (error) {
     res
       .status(500)
-      .send(`Error retrieving the data of the user from the 'chats' table `);
+      .json(`Error retrieving the data of the user from the 'chats' table `);
   }
 };
 
 const createChat = async (req, res) => {
   try {
+    if (!(req.params.user1_id && req.params.user2_id)) {
+      return res.status(400).json(`Some of users is not provided`);
+    }
     const users = await query(`
             SELECT *
             FROM users
             WHERE id IN (${req.params.user1_id}, ${req.params.user2_id})
         `);
-    console.log(users.rows);
-    if (users.length < 2) {
-      res.status(400).send("Some of two users does not exist");
+    if (users.rows.length < 2) {
+      return res.status(400).json("Some of two users does not exist");
     }
+    const chat_name = `${users.rows[0].username}, ${users.rows[1].username}`;
     await query(`
         INSERT INTO chats (user1_id, user2_id, chat_name)
-        VALUES (${req.params.user1_id}, ${req.params.user2_id}, '${users.rows[0].username}, ${users.rows[1].username}')`);
-    res.status(200).send(`Chat was successfully created`);
+        VALUES (${req.params.user1_id}, ${req.params.user2_id}, '${chat_name}')`);
+    res.status(200).json({
+      user1_id: req.params.user1_id,
+      user2_id: req.params.user2_id,
+      chat_name: chat_name,
+    });
   } catch (error) {
     console.error(error);
-    res.status(500).send(`Error creating a new chat`);
+    res.status(500).json(`Error creating a new chat`);
   }
 };
 
 const getMessagesOfChat = async (req, res, next) => {
   try {
+    if (!req.params.chatId) {
+      return res.status(400).json(`Chat_id is not provided`);
+    }
     const chatMessages = await query(`
         SELECT *
         FROM messages
@@ -217,29 +226,35 @@ const getMessagesOfChat = async (req, res, next) => {
     res.status(200).json(chatMessages.rows);
   } catch (error) {
     console.error(error);
-    res.status(500).send(`Error retrieving messages from the chat`);
+    res.status(500).json(`Error retrieving messages from the chat`);
   }
 };
 
 const sendMessage = async (req, res) => {
   try {
-    console.log(req.body);
-    if (req.body) {
-      const { user_id, chat_id, message } = req.body;
-      const response = await query(
-        `SELECT username FROM users WHERE id = ${user_id}`
-      );
-      const { username } = response.rows[0];
-      console.log(user_id, chat_id, message, username);
-      await query(`
+    const { user_id, chat_id, message } = req.body;
+    if (!(user_id && chat_id && message)) {
+      return res
+        .status(400)
+        .json(
+          `Body data is not complete. Check what body values you sent as a request`
+        );
+    }
+    const response = await query(
+      `SELECT username FROM users WHERE id = ${user_id}`
+    );
+    const { username } = response.rows[0];
+    if (!username) {
+      return res.status(400).json(`There is no such user in database`);
+    }
+    await query(`
             INSERT INTO messages (user_id, chat_id, message, user_name)
             VALUES (${user_id}, ${chat_id}, '${message}', '${username}')
             `);
-      res.status(200).json({ user_id, chat_id, message, username });
-    }
+    res.status(200).json({ user_id, chat_id, message, username });
   } catch (error) {
     console.error(error);
-    res.status(500).send(`Error sending the message`);
+    res.status(500).json(`Error sending the message`);
   }
 };
 
@@ -247,7 +262,6 @@ module.exports = {
   getUsers: getUsers,
   getSingleUser: getSingleUser,
   updateSingleUser: updateSingleUser,
-  getChats: getChats,
   getChatsOfUser: getChatsOfUser,
   createChat: createChat,
   signUpUser: signUpUser,

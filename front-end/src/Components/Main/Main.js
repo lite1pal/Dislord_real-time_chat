@@ -40,13 +40,16 @@ const Main = ({ setAuth, isAuth, socket }) => {
         };
         // fetches data from a server
         const response = await fetch(
-          `http://localhost:4001/api/chats/${Cookies.get("id")}`,
+          `http://192.168.0.114:4001/api/chats/${Cookies.get("id")}`,
           requestOptions
         );
         // checks if response is valid, then sets response data to a state
         if (response.ok) {
           const parseRes = await response.json();
           setChats(parseRes);
+        } else {
+          const parseRes = await response.json();
+          console.log(parseRes);
         }
       } catch (error) {
         console.error(error.message);
@@ -62,12 +65,15 @@ const Main = ({ setAuth, isAuth, socket }) => {
           },
         };
         const response = await fetch(
-          "http://localhost:4001/api/users",
+          "http://192.168.0.114:4001/api/users",
           requestOptions
         );
         if (response.ok) {
           const parseRes = await response.json();
           setUsers(parseRes);
+        } else {
+          const parseRes = await response.json();
+          console.log(parseRes);
         }
       } catch (error) {
         console.error(error.message);
@@ -126,7 +132,7 @@ const Main = ({ setAuth, isAuth, socket }) => {
           body: JSON.stringify(body),
         };
         const response = await fetch(
-          `http://localhost:4001/api/messages/${chat_id}/${user_id}`,
+          `http://192.168.0.114:4001/api/messages/${chat_id}/${user_id}`,
           requestOptions
         );
         if (response.ok) {
@@ -135,6 +141,9 @@ const Main = ({ setAuth, isAuth, socket }) => {
             message: parseRes.message,
             chat_id: chat_id,
           });
+        } else {
+          const parseRes = await response.json();
+          console.log(parseRes);
         }
       }
     } catch (error) {
@@ -152,6 +161,9 @@ const Main = ({ setAuth, isAuth, socket }) => {
         messages={messages}
         setMessages={setMessages}
         token={token}
+        users={users}
+        mainUser={mainUser}
+        setChats={setChats}
       />
       <Chatroom
         curChat={curChat}
