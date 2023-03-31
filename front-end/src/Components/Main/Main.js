@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "../Navbar/Navbar";
+import Sidebar from "../Sidebar/Sidebar";
+import Chatroom from "../Chatroom/Chatroom";
 import Cookies from "js-cookie"; // third-party module to get the cookies of the web app
-import "./Profile.css";
 
-const Profile = ({ setAuth, isAuth, socket }) => {
+const Main = ({ setAuth, isAuth, socket }) => {
   /* uses useState() function to define state variables
      that will store in component even after render(),
      also you can reassign them with 'setVariable(newValue)'
@@ -104,33 +105,7 @@ const Profile = ({ setAuth, isAuth, socket }) => {
     });
   }, [messages, curChat]);
 
-  const fetchMessages = async (chat_id, chat_name) => {
-    try {
-      if (`${chat_id}` in messages) {
-        setCurChat({ id: chat_id, name: chat_name });
-        console.log("Messages of the chat are already loaded");
-      } else {
-        const requestOptions = {
-          method: "GET",
-          headers: { Authorization: `Bearer ${token}` },
-        };
-
-        const response = await fetch(
-          `http://localhost:4001/api/messages/${chat_id}`,
-          requestOptions
-        );
-        if (response.ok) {
-          const parseRes = await response.json();
-          setMessages({ ...messages, [chat_id]: parseRes });
-          setCurChat({ id: chat_id, name: chat_name });
-        }
-      }
-    } catch (error) {
-      console.error(error.message);
-    }
-  };
-
-  const onChangeInput = (e) => {
+  const onChangeMessageInput = (e) => {
     setInput(e.target.value);
   };
 
@@ -168,49 +143,25 @@ const Profile = ({ setAuth, isAuth, socket }) => {
   };
 
   return (
-    <div className="body">
-      <Navbar isAuth={isAuth} />
-      <h2>{mainUser["username"]}</h2>
-      <button onClick={logOut}>Log out</button>
-      <div className="chats">
-        <h2>Chats</h2>
-        {chats.map((chat) => (
-          <button
-            onClick={() => fetchMessages(chat.chat_id, chat.chat_name)}
-            className="chatButtons"
-            key={chat.chat_id}
-          >
-            {chat.chat_name}
-          </button>
-        ))}
-        <h3>Add a new chat</h3>
-      </div>
-      <button id="addChat">+</button>
-      <div className="chatRoom">
-        <h2>{curChat.name}</h2>
-        <div className="messages">
-          {curChat.id
-            ? messages[`${curChat.id}`].map((message, index) => (
-                <div className="message" key={index}>
-                  {/* {
-                    users.filter((user) => user["id"] === message.user_id)[0][
-                      "username"
-                    ]
-                  } */}
-                  {message.user_name}: {message.message}
-                </div>
-              ))
-            : ""}
-        </div>
-        <form onSubmit={sendMessage}>
-          <div className="sendBar">
-            <input onChange={onChangeInput} type="text" name="message" />
-            <button type="submit">SEND</button>
-          </div>
-        </form>
-      </div>
+    <div>
+      <Navbar isAuth={isAuth} mainUser={mainUser} setAuth={setAuth} />
+      <Sidebar
+        chats={chats}
+        curChat={curChat}
+        setCurChat={setCurChat}
+        messages={messages}
+        setMessages={setMessages}
+        token={token}
+      />
+      <Chatroom
+        curChat={curChat}
+        messages={messages}
+        onChangeMessageInput={onChangeMessageInput}
+        sendMessage={sendMessage}
+        token={token}
+      />
     </div>
   );
 };
 
-export default Profile;
+export default Main;

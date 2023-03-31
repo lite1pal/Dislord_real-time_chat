@@ -3,7 +3,7 @@ import "./App.css";
 import { Routes, Route, Navigate } from "react-router-dom";
 import io from "socket.io-client";
 
-import Profile from "../Profile/Profile";
+import Main from "../Main/Main";
 import Login from "../Login/Login";
 import SignUp from "../SignUp/SignUp";
 
@@ -34,18 +34,18 @@ const App = () => {
           !isAuth ? (
             <Login setAuth={setAuth} isAuth={isAuth} />
           ) : (
-            <Navigate to="/profile" />
+            <Navigate to="/main" />
           )
         }
       />
       <Route path="/signup" element={<SignUp isAuth={isAuth} />} />
       <Route
-        path="/profile"
+        path="/main"
         element={
           !isAuth ? (
             <Navigate to="/login" />
           ) : (
-            <Profile setAuth={setAuth} isAuth={isAuth} socket={socket} />
+            <Main setAuth={setAuth} isAuth={isAuth} socket={socket} />
           )
         }
       />

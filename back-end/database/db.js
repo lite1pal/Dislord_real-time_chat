@@ -6,10 +6,10 @@ require("dotenv").config();
 
 // Creates the connection between the Postgres database and the NodeJS server.
 const pool = new Pool({
-  user: "postgres",
-  host: "localhost",
-  database: "discord",
-  password: `postgres`,
+  user: "lite1pal",
+  host: "ep-long-field-822683.eu-central-1.aws.neon.tech",
+  database: "neondb",
+  password: "nqhN2YELgU8e",
   port: 5432,
 });
 

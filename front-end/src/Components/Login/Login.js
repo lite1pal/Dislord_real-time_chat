@@ -37,7 +37,7 @@ const Login = ({ setAuth, isAuth }) => {
           document.cookie = `username=${username}; path=/`;
           document.cookie = `email=${email}; path=/`;
           setAuth(true);
-          redirect("/profile");
+          redirect("/main");
         }
       }
     } catch (error) {
@@ -46,9 +46,9 @@ const Login = ({ setAuth, isAuth }) => {
   };
   return (
     <>
-      <Navbar url={"/signup"} inner={"Sign Up"} isAuth={isAuth} />
+      {/* <Navbar url={"/signup"} inner={"Sign Up"} isAuth={isAuth} /> */}
       <div className="SignUp">
-        <h1>Login</h1>
+        <h2 className="text-white font-bold text-xl mr-4">Login</h2>
         <form onSubmit={onSubmit}>
           <input
             onChange={onChange}
