@@ -92,6 +92,7 @@ const Main = ({ setAuth, isAuth, socket }) => {
           [curChat.id]: [
             ...messages[curChat.id],
             {
+              message_id: data.message_id,
               chat_id: data.chat_id,
               message: data.message,
               user_id: data.user_id,
@@ -131,10 +132,11 @@ const Main = ({ setAuth, isAuth, socket }) => {
         if (response.ok) {
           const parseRes = await response.json();
           console.log(parseRes);
-          socket.emit("chat message", {
-            message: parseRes.message,
-            chat_id: chat_id,
-          });
+          // socket.emit("chat message", {
+          //   message: parseRes.message,
+          //   chat_id: chat_id,
+          // });
+          socket.emit("chat message", parseRes);
         } else {
           const parseRes = await response.json();
           console.log(parseRes);
