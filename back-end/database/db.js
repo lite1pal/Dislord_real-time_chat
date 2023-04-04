@@ -248,17 +248,17 @@ const sendMessage = async (req, res) => {
     const response = await query(
       `SELECT username FROM users WHERE id = ${user_id}`
     );
-    const { username } = response.rows[0];
-    if (!username) {
+    const { user_name } = response.rows[0];
+    if (!user_name) {
       return res.status(400).json(`There is no such user in database`);
     }
     const secResponse = await query(`
             INSERT INTO messages (user_id, chat_id, message, user_name)
-            VALUES (${user_id}, ${chat_id}, '${message}', '${username}');
+            VALUES (${user_id}, ${chat_id}, '${message}', '${user_name}');
             SELECT currval(pg_get_serial_sequence('messages','message_id'))
             `);
     const message_id = secResponse[1].rows[0].currval;
-    res.status(200).json({ message_id, user_id, chat_id, message, username });
+    res.status(200).json({ message_id, user_id, chat_id, message, user_name });
   } catch (error) {
     console.error(error);
     res.status(500).json(`Error sending the message`);
