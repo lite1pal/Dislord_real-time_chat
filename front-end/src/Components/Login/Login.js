@@ -27,7 +27,7 @@ const Login = ({ setAuth, isAuth }) => {
         body: JSON.stringify(body),
       };
       const response = await fetch(
-        "http://192.168.0.114:4001/api/users/login",
+        "http://localhost:4001/api/users/login",
         requestOptions
       );
       console.log("something is happening");

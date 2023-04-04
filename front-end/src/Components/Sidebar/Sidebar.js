@@ -25,7 +25,7 @@ const Sidebar = ({
         };
 
         const response = await fetch(
-          `http://192.168.0.114:4001/api/messages/${chat_id}`,
+          `http://localhost:4001/api/messages/${chat_id}`,
           requestOptions
         );
         if (response.ok) {
@@ -60,10 +60,9 @@ const Sidebar = ({
         },
       };
       const response = await fetch(
-        `http://192.168.0.114:4001/api/chats/${mainUser.id}/${user.id}`,
+        `http://localhost:4001/api/chats/${mainUser.id}/${user.id}`,
         requestOptions
       );
-      console.log("works");
       if (response.ok) {
         const parseRes = await response.json();
         setChats([...chats, parseRes]);
@@ -83,9 +82,9 @@ const Sidebar = ({
       </div>
       <ul className="flex flex-col p-4 space-y-2">
         {Array.isArray(chats) &&
-          chats.map((chat, index) => (
+          chats.map((chat) => (
             <li
-              key={index}
+              key={chat.chat_id}
               className={`p-2 rounded-md cursor-pointer ${
                 curChat === chat.chat_id
                   ? "bg-blue-600 text-white"

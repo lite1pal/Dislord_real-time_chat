@@ -202,7 +202,12 @@ const createChat = async (req, res) => {
     await query(`
         INSERT INTO chats (user1_id, user2_id, chat_name)
         VALUES (${req.params.user1_id}, ${req.params.user2_id}, '${chat_name}')`);
+    const newChat = await query(`
+        SELECT * FROM chats
+        WHERE user1_id = ${req.params.user1_id} AND user2_id = ${req.params.user2_id}    
+    `);
     res.status(200).json({
+      chat_id: newChat.rows[0].chat_id,
       user1_id: req.params.user1_id,
       user2_id: req.params.user2_id,
       chat_name: chat_name,
@@ -247,11 +252,13 @@ const sendMessage = async (req, res) => {
     if (!username) {
       return res.status(400).json(`There is no such user in database`);
     }
-    await query(`
+    const secResponse = await query(`
             INSERT INTO messages (user_id, chat_id, message, user_name)
-            VALUES (${user_id}, ${chat_id}, '${message}', '${username}')
+            VALUES (${user_id}, ${chat_id}, '${message}', '${username}');
+            SELECT currval(pg_get_serial_sequence('messages','message_id'))
             `);
-    res.status(200).json({ user_id, chat_id, message, username });
+    const message_id = secResponse[1].rows[0].currval;
+    res.status(200).json({ message_id, user_id, chat_id, message, username });
   } catch (error) {
     console.error(error);
     res.status(500).json(`Error sending the message`);

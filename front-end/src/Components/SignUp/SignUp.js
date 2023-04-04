@@ -27,7 +27,7 @@ const SignUp = ({ isAuth }) => {
           body: JSON.stringify(body),
         };
         const response = await fetch(
-          "http://192.168.0.114:4001/api/users/signup",
+          "http://localhost:4001/api/users/signup",
           requestOptions
         );
         if (response.ok) {

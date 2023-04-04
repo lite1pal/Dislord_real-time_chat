@@ -17,15 +17,6 @@ const Main = ({ setAuth, isAuth, socket }) => {
   const [input, setInput] = useState("");
   const token = Cookies.get("token");
 
-  const logOut = () => {
-    // removes the cookies of a user after his logging out
-    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    document.cookie = "id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    document.cookie =
-      "username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    document.cookie = "email=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    setAuth(false); // sets the status of authentication to false as the user got logged out
-  };
   /* this function invokes each time the page is updated,
     very helpful to fetch all needed data in the beginning */
   useEffect(() => {
@@ -40,7 +31,7 @@ const Main = ({ setAuth, isAuth, socket }) => {
         };
         // fetches data from a server
         const response = await fetch(
-          `http://192.168.0.114:4001/api/chats/${Cookies.get("id")}`,
+          `http://localhost:4001/api/chats/${Cookies.get("id")}`,
           requestOptions
         );
         // checks if response is valid, then sets response data to a state
@@ -65,7 +56,7 @@ const Main = ({ setAuth, isAuth, socket }) => {
           },
         };
         const response = await fetch(
-          "http://192.168.0.114:4001/api/users",
+          "http://localhost:4001/api/users",
           requestOptions
         );
         if (response.ok) {
@@ -132,11 +123,12 @@ const Main = ({ setAuth, isAuth, socket }) => {
           body: JSON.stringify(body),
         };
         const response = await fetch(
-          `http://192.168.0.114:4001/api/messages/${chat_id}/${user_id}`,
+          `http://localhost:4001/api/messages/${chat_id}/${user_id}`,
           requestOptions
         );
         if (response.ok) {
           const parseRes = await response.json();
+          console.log(parseRes);
           socket.emit("chat message", {
             message: parseRes.message,
             chat_id: chat_id,
@@ -153,25 +145,31 @@ const Main = ({ setAuth, isAuth, socket }) => {
 
   return (
     <div>
-      <Navbar isAuth={isAuth} mainUser={mainUser} setAuth={setAuth} />
-      <Sidebar
-        chats={chats}
-        curChat={curChat}
-        setCurChat={setCurChat}
-        messages={messages}
-        setMessages={setMessages}
-        token={token}
-        users={users}
-        mainUser={mainUser}
-        setChats={setChats}
-      />
-      <Chatroom
-        curChat={curChat}
-        messages={messages}
-        onChangeMessageInput={onChangeMessageInput}
-        sendMessage={sendMessage}
-        token={token}
-      />
+      {chats.length > 0 ? (
+        <>
+          <Navbar isAuth={isAuth} mainUser={mainUser} setAuth={setAuth} />
+          <Sidebar
+            chats={chats}
+            curChat={curChat}
+            setCurChat={setCurChat}
+            messages={messages}
+            setMessages={setMessages}
+            token={token}
+            users={users}
+            mainUser={mainUser}
+            setChats={setChats}
+          />
+          <Chatroom
+            curChat={curChat}
+            messages={messages}
+            onChangeMessageInput={onChangeMessageInput}
+            sendMessage={sendMessage}
+            token={token}
+          />
+        </>
+      ) : (
+        <div>Loading...</div>
+      )}
     </div>
   );
 };

@@ -7,7 +7,7 @@ import Main from "../Main/Main";
 import Login from "../Login/Login";
 import SignUp from "../SignUp/SignUp";
 
-const socket = io.connect("http://192.168.0.114:4001");
+const socket = io.connect("http://localhost:4001");
 
 const App = () => {
   const [isAuth, setIsAuth] = useState(false);

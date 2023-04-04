@@ -12,8 +12,8 @@ const Chatroom = ({ curChat, messages, sendMessage, onChangeMessageInput }) => {
           style={{ flexDirection: "column-reverse" }}
         >
           {curChat.id ? (
-            messages[`${curChat.id}`].map((message, index) => (
-              <div key={index} className="mb-2">
+            messages[`${curChat.id}`].map((message) => (
+              <div key={message.message_id} className="mb-2">
                 <span className="font-bold text-gray-300">
                   {message.user_name}:{" "}
                 </span>
@@ -37,6 +37,7 @@ const Chatroom = ({ curChat, messages, sendMessage, onChangeMessageInput }) => {
               name="message"
               placeholder="Message #general"
               onChange={onChangeMessageInput}
+              autocomplete="off"
             />
             <button className="w-24 h-10 bg-discord-blue text-white font-bold rounded-md hover:bg-discord-dark-blue transition-colors duration-300">
               SEND
