@@ -27,9 +27,9 @@ const App = () => {
 
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/login" />} />
+      {/* <Route path="/" element={<Navigate to="/login" />} /> */}
       <Route
-        path="/login"
+        path="/"
         element={
           !isAuth ? (
             <Login setAuth={setAuth} isAuth={isAuth} />
@@ -43,7 +43,7 @@ const App = () => {
         path="/main"
         element={
           !isAuth ? (
-            <Navigate to="/login" />
+            <Navigate to="/" />
           ) : (
             <Main setAuth={setAuth} isAuth={isAuth} socket={socket} />
           )
