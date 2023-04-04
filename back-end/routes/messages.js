@@ -3,8 +3,8 @@ const messagesRouter = express.Router();
 const { getMessagesOfChat, sendMessage } = require("../database/db");
 const { auth } = require("../utils");
 
-messagesRouter.get("/:chatId", getMessagesOfChat);
+messagesRouter.get("/:chatId", auth, getMessagesOfChat);
 
-messagesRouter.post("/:chatId/:userId", sendMessage);
+messagesRouter.post("/:chatId/:userId", auth, sendMessage);
 
 module.exports = messagesRouter;
