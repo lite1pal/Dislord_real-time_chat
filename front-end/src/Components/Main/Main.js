@@ -94,8 +94,8 @@ const Main = ({ setAuth, isAuth, socket }) => {
             {
               chat_id: data.chat_id,
               message: data.message,
-              user_id: mainUser.id,
-              user_name: mainUser.username,
+              user_id: data.user_id,
+              username: data.username,
               sent_at: today.toISOString(),
             },
           ],
