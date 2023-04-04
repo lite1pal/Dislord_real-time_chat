@@ -7,7 +7,9 @@ import Main from "../Main/Main";
 import Login from "../Login/Login";
 import SignUp from "../SignUp/SignUp";
 
-const socket = io.connect("https://dislord-chat-app.onrender.com");
+const socket = io.connect("https://dislord-chat-app.onrender.com", {
+  withCredentials: true,
+});
 
 const App = () => {
   const [isAuth, setIsAuth] = useState(false);
