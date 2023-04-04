@@ -15,7 +15,7 @@ const Chatroom = ({ curChat, messages, sendMessage, onChangeMessageInput }) => {
             messages[`${curChat.id}`].map((message) => (
               <div key={message.message_id} className="mb-2">
                 <span className="font-bold text-gray-300">
-                  {message.user_name}:{" "}
+                  {message.username}:{" "}
                 </span>
                 <span className="text-gray-400">{message.message}</span>
               </div>
