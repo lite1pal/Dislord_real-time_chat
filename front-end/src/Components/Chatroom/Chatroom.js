@@ -37,7 +37,7 @@ const Chatroom = ({ curChat, messages, sendMessage, onChangeMessageInput }) => {
               name="message"
               placeholder="Message #general"
               onChange={onChangeMessageInput}
-              autocomplete="off"
+              autoComplete="off"
             />
             <button className="w-24 h-10 bg-discord-blue text-white font-bold rounded-md hover:bg-discord-dark-blue transition-colors duration-300">
               SEND

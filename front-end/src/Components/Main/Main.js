@@ -31,7 +31,9 @@ const Main = ({ setAuth, isAuth, socket }) => {
         };
         // fetches data from a server
         const response = await fetch(
-          `http://localhost:4001/api/chats/${Cookies.get("id")}`,
+          `https://dislord-chat-app.onrender.com/api/chats/${Cookies.get(
+            "id"
+          )}`,
           requestOptions
         );
         // checks if response is valid, then sets response data to a state
@@ -56,7 +58,7 @@ const Main = ({ setAuth, isAuth, socket }) => {
           },
         };
         const response = await fetch(
-          "http://localhost:4001/api/users",
+          "https://dislord-chat-app.onrender.com/api/users",
           requestOptions
         );
         if (response.ok) {
@@ -123,7 +125,7 @@ const Main = ({ setAuth, isAuth, socket }) => {
           body: JSON.stringify(body),
         };
         const response = await fetch(
-          `http://localhost:4001/api/messages/${chat_id}/${user_id}`,
+          `https://dislord-chat-app.onrender.com/api/messages/${chat_id}/${user_id}`,
           requestOptions
         );
         if (response.ok) {
@@ -145,31 +147,25 @@ const Main = ({ setAuth, isAuth, socket }) => {
 
   return (
     <div>
-      {chats.length > 0 ? (
-        <>
-          <Navbar isAuth={isAuth} mainUser={mainUser} setAuth={setAuth} />
-          <Sidebar
-            chats={chats}
-            curChat={curChat}
-            setCurChat={setCurChat}
-            messages={messages}
-            setMessages={setMessages}
-            token={token}
-            users={users}
-            mainUser={mainUser}
-            setChats={setChats}
-          />
-          <Chatroom
-            curChat={curChat}
-            messages={messages}
-            onChangeMessageInput={onChangeMessageInput}
-            sendMessage={sendMessage}
-            token={token}
-          />
-        </>
-      ) : (
-        <div>Loading...</div>
-      )}
+      <Navbar isAuth={isAuth} mainUser={mainUser} setAuth={setAuth} />
+      <Sidebar
+        chats={chats}
+        curChat={curChat}
+        setCurChat={setCurChat}
+        messages={messages}
+        setMessages={setMessages}
+        token={token}
+        users={users}
+        mainUser={mainUser}
+        setChats={setChats}
+      />
+      <Chatroom
+        curChat={curChat}
+        messages={messages}
+        onChangeMessageInput={onChangeMessageInput}
+        sendMessage={sendMessage}
+        token={token}
+      />
     </div>
   );
 };

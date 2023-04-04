@@ -27,7 +27,7 @@ const Login = ({ setAuth, isAuth }) => {
         body: JSON.stringify(body),
       };
       const response = await fetch(
-        "http://localhost:4001/api/users/login",
+        "https://dislord-chat-app.onrender.com/api/users/login",
         requestOptions
       );
       console.log("something is happening");

@@ -25,7 +25,7 @@ const Sidebar = ({
         };
 
         const response = await fetch(
-          `http://localhost:4001/api/messages/${chat_id}`,
+          `https://dislord-chat-app.onrender.com/api/messages/${chat_id}`,
           requestOptions
         );
         if (response.ok) {
@@ -60,7 +60,7 @@ const Sidebar = ({
         },
       };
       const response = await fetch(
-        `http://localhost:4001/api/chats/${mainUser.id}/${user.id}`,
+        `https://dislord-chat-app.onrender.com/api/chats/${mainUser.id}/${user.id}`,
         requestOptions
       );
       if (response.ok) {
