@@ -11,7 +11,7 @@ const Chatroom = ({ curChat, messages, sendMessage, onChangeMessageInput }) => {
           className="h-80 p-4 overflow-y-scroll"
           style={{ flexDirection: "column-reverse" }}
         >
-          {curChat.id || messages[`${curChat.id}`].length < 1 ? (
+          {curChat.id ? (
             messages[`${curChat.id}`].map((message) => (
               <div key={message.message_id} className="mb-2">
                 <span className="font-bold text-gray-300">
