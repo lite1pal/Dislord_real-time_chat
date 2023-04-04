@@ -4,8 +4,8 @@ const chatsRouter = express.Router();
 const { getChatsOfUser, createChat } = require("../database/db");
 const { auth } = require("../utils");
 
-chatsRouter.get("/:user_id", auth, getChatsOfUser);
+chatsRouter.get("/:user_id", getChatsOfUser);
 
-chatsRouter.post("/:user1_id/:user2_id", auth, createChat);
+chatsRouter.post("/:user1_id/:user2_id", createChat);
 
 module.exports = chatsRouter;
