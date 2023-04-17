@@ -10,7 +10,7 @@ import SignUp from "../SignUp/SignUp";
 
 const apiUrl = "https://dislord-chat-app.onrender.com";
 
-const socket = io.connect(`${apiUrl}`);
+const socket = io.connect(apiUrl);
 
 const App = () => {
   const [isAuth, setIsAuth] = useState(false);

@@ -38,7 +38,7 @@ app.use(cookieParser());
 // from the specified origin, methods and headers
 app.use(
   cors({
-    origin: `${process.env.CLIENT_URL}:3000`,
+    origin: process.env.CLIENT_URL,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-type", "Authorization"],
   })
