@@ -23,8 +23,8 @@ const getMessagesOfChat = async (req, res) => {
 
 const sendMessage = async (req, res) => {
   try {
-    const { user_id, chat_id, message, user_name, sent_at } = req.body;
-    message = message.replace(/'/g, "''");
+    const { user_id, chat_id, user_name, sent_at } = req.body;
+    const message = req.body.message.replace(/'/g, "''");
     if (!user_id || !chat_id || !message || !user_name || !sent_at) {
       return res
         .status(400)
