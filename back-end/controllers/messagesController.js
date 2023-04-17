@@ -24,6 +24,7 @@ const getMessagesOfChat = async (req, res) => {
 const sendMessage = async (req, res) => {
   try {
     const { user_id, chat_id, message, user_name, sent_at } = req.body;
+    message = message.replace(/'/g, "''");
     if (!user_id || !chat_id || !message || !user_name || !sent_at) {
       return res
         .status(400)
@@ -34,7 +35,7 @@ const sendMessage = async (req, res) => {
     const result = await query({
       text: `
     INSERT INTO messages (user_id, chat_id, message, user_name, sent_at)
-    VALUES ($1, $2, $$$3$$, $4, $5)
+    VALUES ($1, $2, $3, $4, $5)
     RETURNING message_id
     `,
       values: [user_id, chat_id, message, user_name, sent_at],
