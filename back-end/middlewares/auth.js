@@ -1,15 +1,7 @@
 const jwt = require("jsonwebtoken");
 
-const isPasswordValid = (password) => {
-  if (password.length < 8) {
-    return false;
-  }
-  return true;
-};
-
 const auth = (req, res, next) => {
   const token = req.headers.authorization.split(" ")[1];
-  console.log(token, process.env.TOKEN_KEY);
   try {
     const isToken = jwt.verify(token, process.env.TOKEN_KEY);
     if (!isToken) {
@@ -24,4 +16,4 @@ const auth = (req, res, next) => {
   }
 };
 
-module.exports = { isPasswordValid, auth };
+module.exports = { auth };

@@ -1,7 +1,10 @@
 const express = require("express");
 const messagesRouter = express.Router();
-const { getMessagesOfChat, sendMessage } = require("../database/db");
-const { auth } = require("../utils");
+const {
+  getMessagesOfChat,
+  sendMessage,
+} = require("../controllers/messagesController");
+const { auth } = require("../middlewares/auth");
 
 messagesRouter.get("/:chatId", auth, getMessagesOfChat);
 

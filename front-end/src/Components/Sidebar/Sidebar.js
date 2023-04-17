@@ -1,4 +1,11 @@
-import React, { useState, useEffect, useId } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { Notify } from "notiflix/build/notiflix-notify-aio";
+
+import { getRequestOptions } from "../../utils";
+
+import SidebarHeader from "../SidebarHeader/SidebarHeader";
+import ChatList from "../ChatList/ChatList";
+import UserSearch from "../UserSearch/UserSearch";
 
 const Sidebar = ({
   chats,
@@ -10,32 +17,51 @@ const Sidebar = ({
   users,
   mainUser,
   setChats,
+  apiUrl,
+  socket,
 }) => {
   const [showUsers, setShowUsers] = useState(false);
-  const id = useId();
+  const [foundUsers, setFoundUsers] = useState([]);
+
+  // socket
+  useEffect(() => {
+    socket.on("remove chat", (data) => {
+      setMessages({});
+      setChats(data);
+      setCurChat({});
+    });
+    socket.on("create chat", (data) => {
+      console.log(chats);
+      if (chats) setChats([...chats, data]);
+    });
+
+    socket.on("start-broadcast", async (data) => {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const audioTrack = stream.getAudioTracks()[0];
+      const sender = socket.broadcastStream.addTrack(audioTrack);
+      console.log("another success");
+    });
+  }, [chats]);
+
+  // functions that occur on click
   const fetchMessages = async (chat_id, chat_name) => {
     try {
+      socket.emit("start-broadcast", {});
       if (`${chat_id}` in messages) {
         setCurChat({ id: chat_id, name: chat_name });
-        console.log("Messages of the chat are already loaded");
-      } else {
-        const requestOptions = {
-          method: "GET",
-          headers: { Authorization: `Bearer ${token}` },
-        };
+        return console.log("Messages of the chat are already loaded");
+      }
 
-        const response = await fetch(
-          `https://dislord-chat-app.onrender.com/api/messages/${chat_id}`,
-          requestOptions
-        );
-        if (response.ok) {
-          const parseRes = await response.json();
-          setMessages({ ...messages, [chat_id]: parseRes });
-          setCurChat({ id: chat_id, name: chat_name });
-        } else {
-          const parseRes = await response.json();
-          console.log(parseRes);
-        }
+      const response = await fetch(
+        `${apiUrl}/api/messages/${chat_id}`,
+        getRequestOptions("GET", token)
+      );
+      const parseRes = await response.json();
+      if (response.ok) {
+        setMessages({ ...messages, [chat_id]: parseRes });
+        setCurChat({ id: chat_id, name: chat_name });
+      } else {
+        console.log(parseRes);
       }
     } catch (error) {
       console.error(error.message);
@@ -50,24 +76,67 @@ const Sidebar = ({
     }
   };
 
+  const onChangeSearchUsers = (e) => {
+    if (!e.target.value) return setFoundUsers([]);
+
+    // create regular expression for searching users when the input is changed
+    const regex = new RegExp(`^${e.target.value}`, "i");
+    const result = users.filter((user) => regex.test(user.username));
+    setFoundUsers(result);
+  };
+
   const onClickCreateChat = async (user) => {
     try {
-      const requestOptions = {
-        method: "POST",
-        headers: {
-          // "Content-type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      };
+      const body = { user1_name: mainUser.username, user2_name: user.username };
+      if (!body.user1_name || !body.user2_name)
+        return console.log("Some of the username is missed");
+
+      // check if there is a chat with these users already
+      const isChat = chats.some((chat) => {
+        return (
+          (chat.user1_id == mainUser.id && chat.user2_id == user.id) ||
+          (chat.user1_id == user.id && chat.user2_id == mainUser.id)
+        );
+      });
+      if (isChat) {
+        Notify.failure(`Chat with this user exits already`, {
+          position: "left-bottom",
+        });
+        return;
+      }
+      console.log(getRequestOptions("POST", token, body));
       const response = await fetch(
-        `https://dislord-chat-app.onrender.com/api/chats/${mainUser.id}/${user.id}`,
-        requestOptions
+        `${apiUrl}/api/chats/${mainUser.id}/${user.id}`,
+        getRequestOptions("POST", token, body)
       );
+      const parseRes = await response.json();
       if (response.ok) {
-        const parseRes = await response.json();
-        setChats([...chats, parseRes]);
+        Notify.success(`Chat ${parseRes.chat_name} was created!`, {
+          position: "left-bottom",
+        });
+        socket.emit("create chat", parseRes);
       } else {
-        const parseRes = await response.json();
+        console.log(parseRes);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const onClickRemoveChat = async (chat) => {
+    try {
+      if (!chat) return console.log(`Chat is missing`);
+      const response = await fetch(
+        `${apiUrl}/api/chats/delete`,
+        getRequestOptions("DELETE", token, chat)
+      );
+      const parseRes = await response.json();
+      if (response.ok) {
+        const updatedChats = chats.filter((c) => {
+          return c.chat_id !== chat.chat_id;
+        });
+        socket.emit("remove chat", updatedChats);
+      } else {
         console.log(parseRes);
       }
     } catch (error) {
@@ -77,73 +146,23 @@ const Sidebar = ({
 
   return (
     <div className="w-1/4 h-full bg-gray-800">
-      <div className="p-4 bg-gray-900 border-b border-gray-700">
-        <h2 className="text-lg font-bold text-white">Chats</h2>
-      </div>
-      <ul className="flex flex-col p-4 space-y-2">
-        {Array.isArray(chats) &&
-          chats.map((chat) => (
-            <li
-              key={chat.chat_id}
-              className={`p-2 rounded-md cursor-pointer ${
-                curChat === chat.chat_id
-                  ? "bg-blue-600 text-white"
-                  : "hover:bg-gray-700"
-              }`}
-              onClick={() => fetchMessages(chat.chat_id, chat.chat_name)}
-            >
-              <div className="flex items-center">
-                <div className="w-4 h-4 mr-2 rounded-full bg-gray-500"></div>
-                <span className="text-sm font-medium text-white">
-                  {chat.chat_name}
-                </span>
-              </div>
-            </li>
-          ))}
-      </ul>
-      <div className="p-4 bg-gray-900 border-t border-gray-700 rounded-t-lg">
-        <h3 className="text-lg font-bold text-white mb-2">Add a new chat</h3>
-        {showUsers ? (
-          <div className="bg-gray-800 rounded-md p-4">
-            {console.log(curChat.name)}
-            <ul>
-              {users.map((user) => {
-                return (
-                  <li
-                    className="flex items-center justify-between py-2"
-                    key={user.id}
-                  >
-                    <span className="text-white">{user.username}</span>
-                    <button
-                      onClick={() => onClickCreateChat(user)}
-                      className="w-20 h-8 rounded-md bg-blue-400 text-white font-bold hover:bg-blue-500"
-                    >
-                      Add
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        ) : null}
-        <button
-          onClick={onClickShowUsers}
-          className="w-10 h-10 bg-blue-600 rounded-full text-white font-bold mt-4"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            className="w-6 h-6"
-          >
-            <path
-              fillRule="evenodd"
-              d="M12 0C5.383 0 0 5.383 0 12s5.383 12 12 12 12-5.383 12-12S18.617 0 12 0zm5 13a1 1 0 01-2 0V11H13a1 1 0 010-2h2V7a1 1 0 112 0v2h2a1 1 0 110 2h-2v2z"
-              clipRule="evenodd"
-            />
-          </svg>
-        </button>
-      </div>
+      <SidebarHeader
+        onClickShowUsers={onClickShowUsers}
+        showUsers={showUsers}
+      />
+      <ChatList
+        chats={chats}
+        onClickRemoveChat={onClickRemoveChat}
+        fetchMessages={fetchMessages}
+        curChat={curChat}
+      />
+      {showUsers ? (
+        <UserSearch
+          onChangeSearchUsers={onChangeSearchUsers}
+          foundUsers={foundUsers}
+          onClickCreateChat={onClickCreateChat}
+        />
+      ) : null}
     </div>
   );
 };

@@ -2,9 +2,11 @@ import React, { useState, useEffect } from "react";
 import Navbar from "../Navbar/Navbar";
 import Sidebar from "../Sidebar/Sidebar";
 import Chatroom from "../Chatroom/Chatroom";
-import Cookies from "js-cookie"; // third-party module to get the cookies of the web app
+import Cookies from "js-cookie"; // third-party module to manage the cookies of the web app
 
-const Main = ({ setAuth, isAuth, socket }) => {
+import { getRequestOptions } from "../../utils";
+
+const Main = ({ setAuth, isAuth, socket, apiUrl }) => {
   /* uses useState() function to define state variables
      that will store in component even after render(),
      also you can reassign them with 'setVariable(newValue)'
@@ -22,26 +24,16 @@ const Main = ({ setAuth, isAuth, socket }) => {
   useEffect(() => {
     const fetchChats = async () => {
       try {
-        // defines request parameters to send to a server
-        const requestOptions = {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        };
         // fetches data from a server
         const response = await fetch(
-          `https://dislord-chat-app.onrender.com/api/chats/${Cookies.get(
-            "id"
-          )}`,
-          requestOptions
+          `${apiUrl}/api/chats/${Cookies.get("id")}`,
+          getRequestOptions("GET", token)
         );
         // checks if response is valid, then sets response data to a state
+        const parseRes = await response.json();
         if (response.ok) {
-          const parseRes = await response.json();
           setChats(parseRes);
         } else {
-          const parseRes = await response.json();
           console.log(parseRes);
         }
       } catch (error) {
@@ -51,21 +43,17 @@ const Main = ({ setAuth, isAuth, socket }) => {
 
     const fetchUsers = async () => {
       try {
-        const requestOptions = {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        };
         const response = await fetch(
-          "https://dislord-chat-app.onrender.com/api/users",
-          requestOptions
+          `${apiUrl}/api/users`,
+          getRequestOptions("GET", token)
         );
+        const parseRes = await response.json();
         if (response.ok) {
-          const parseRes = await response.json();
-          setUsers(parseRes);
+          const fetchedUsers = parseRes.filter((user) => {
+            return user.id != Cookies.get("id");
+          });
+          setUsers(fetchedUsers);
         } else {
-          const parseRes = await response.json();
           console.log(parseRes);
         }
       } catch (error) {
@@ -85,8 +73,6 @@ const Main = ({ setAuth, isAuth, socket }) => {
   useEffect(() => {
     socket.on("chat message", (data) => {
       if (messages[curChat.id]) {
-        const timeElapsed = Date.now();
-        const today = new Date(timeElapsed);
         setMessages({
           ...messages,
           [curChat.id]: [
@@ -97,7 +83,7 @@ const Main = ({ setAuth, isAuth, socket }) => {
               message: data.message,
               user_id: data.user_id,
               user_name: data.user_name,
-              sent_at: today.toISOString(),
+              sent_at: data.sent_at,
             },
           ],
         });
@@ -112,35 +98,45 @@ const Main = ({ setAuth, isAuth, socket }) => {
   const sendMessage = async (e) => {
     e.preventDefault();
     try {
+      // removes text off the message input after message is sent
+      e.target.message.value = "";
+
       const chat_id = curChat.id;
       const user_id = mainUser.id;
-      const message = input;
-      if (chat_id && user_id && message) {
-        const body = { chat_id, user_id, message };
-        const requestOptions = {
-          method: "POST",
-          headers: {
-            "Content-type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(body),
-        };
-        const response = await fetch(
-          `https://dislord-chat-app.onrender.com/api/messages/${chat_id}/${user_id}`,
-          requestOptions
+      const user_name = mainUser.username;
+
+      // matches URLs starting with http, https, ftp, or file
+      const regex =
+        /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi;
+
+      // wraps URLs in <a> tags with target="_blank" to open in a new tab and rel="noopener noreferrer" for security
+      const message = input.replace(
+        regex,
+        '<a href="$1" target="_blank" rel="noopener noreferrer" style="color: #84D2F6">$1</a>'
+      );
+
+      const sent_at = new Date().toLocaleDateString("en-US", {
+        month: "long",
+        day: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+        year: "numeric",
+      });
+      if (!chat_id || !user_id || !message || !user_name || !sent_at) {
+        return console.log(
+          "Something from data is missing, check sendMessage() in Main.js"
         );
-        if (response.ok) {
-          const parseRes = await response.json();
-          console.log(parseRes);
-          // socket.emit("chat message", {
-          //   message: parseRes.message,
-          //   chat_id: chat_id,
-          // });
-          socket.emit("chat message", parseRes);
-        } else {
-          const parseRes = await response.json();
-          console.log(parseRes);
-        }
+      }
+      const body = { chat_id, user_id, message, user_name, sent_at };
+      const response = await fetch(
+        `${apiUrl}/api/messages/${chat_id}/${user_id}`,
+        getRequestOptions("POST", token, body)
+      );
+      const parseRes = await response.json();
+      if (response.ok) {
+        socket.emit("chat message", parseRes);
+      } else {
+        console.log(parseRes);
       }
     } catch (error) {
       console.error(error.message);
@@ -160,6 +156,8 @@ const Main = ({ setAuth, isAuth, socket }) => {
         users={users}
         mainUser={mainUser}
         setChats={setChats}
+        apiUrl={apiUrl}
+        socket={socket}
       />
       <Chatroom
         curChat={curChat}

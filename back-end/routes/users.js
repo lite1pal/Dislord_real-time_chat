@@ -1,14 +1,14 @@
 const express = require("express");
 const usersRouter = express.Router();
 
-const { auth } = require("../utils");
+const { auth } = require("../middlewares/auth");
 const {
   getUsers,
   getSingleUser,
   updateSingleUser,
   signUpUser,
   logInUser,
-} = require("../database/db");
+} = require("../controllers/usersController");
 
 usersRouter.get("/:userId", getSingleUser);
 

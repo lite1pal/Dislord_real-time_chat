@@ -2,14 +2,15 @@ import React, { useState, useEffect } from "react";
 import "./App.css";
 import { Routes, Route, Navigate } from "react-router-dom";
 import io from "socket.io-client";
+import Cookies from "js-cookie";
 
 import Main from "../Main/Main";
 import Login from "../Login/Login";
 import SignUp from "../SignUp/SignUp";
 
-const socket = io.connect("https://dislord-chat-app.onrender.com", {
-  withCredentials: true,
-});
+const apiUrl = "http://localhost:4001";
+
+const socket = io.connect(`${apiUrl}`);
 
 const App = () => {
   const [isAuth, setIsAuth] = useState(false);
@@ -19,7 +20,7 @@ const App = () => {
   };
 
   useEffect(() => {
-    const token = document.cookie.slice(6, -8);
+    const token = Cookies.get("token");
     if (!token) {
       setIsAuth(false);
     } else {
@@ -34,20 +35,28 @@ const App = () => {
         path="/login"
         element={
           !isAuth ? (
-            <Login setAuth={setAuth} isAuth={isAuth} />
+            <Login setAuth={setAuth} isAuth={isAuth} apiUrl={apiUrl} />
           ) : (
             <Navigate to="/main" />
           )
         }
       />
-      <Route path="/signup" element={<SignUp isAuth={isAuth} />} />
+      <Route
+        path="/signup"
+        element={<SignUp isAuth={isAuth} apiUrl={apiUrl} />}
+      />
       <Route
         path="/main"
         element={
           !isAuth ? (
             <Navigate to="/login" />
           ) : (
-            <Main setAuth={setAuth} isAuth={isAuth} socket={socket} />
+            <Main
+              setAuth={setAuth}
+              isAuth={isAuth}
+              socket={socket}
+              apiUrl={apiUrl}
+            />
           )
         }
       />
