@@ -35,9 +35,9 @@ io.on("connection", (socket) => {
     io.emit("create chat", data);
   });
 
-  socket.on("start-broadcast", async (data) => {
-    socket.emit("start-broadcast");
-  });
+  // socket.on("start-broadcast", async (data) => {
+  //   socket.emit("start-broadcast");
+  // });
 
   socket.on("disconnect", () => {
     console.log("User disconnected");

@@ -35,18 +35,18 @@ const Sidebar = ({
       if (chats) setChats([...chats, data]);
     });
 
-    socket.on("start-broadcast", async (data) => {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const audioTrack = stream.getAudioTracks()[0];
-      const sender = socket.broadcastStream.addTrack(audioTrack);
-      console.log("another success");
-    });
+    // socket.on("start-broadcast", async (data) => {
+    //   const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    //   const audioTrack = stream.getAudioTracks()[0];
+    //   const sender = socket.broadcastStream.addTrack(audioTrack);
+    //   console.log("another success");
+    // });
   }, [chats]);
 
   // functions that occur on click
   const fetchMessages = async (chat_id, chat_name) => {
     try {
-      socket.emit("start-broadcast", {});
+      // socket.emit("start-broadcast", {});
       if (`${chat_id}` in messages) {
         setCurChat({ id: chat_id, name: chat_name });
         return console.log("Messages of the chat are already loaded");
