@@ -14,7 +14,7 @@ require("dotenv").config();
 // configures the socket.io with specified cors options
 const io = new Server(server, {
   cors: {
-    origin: `${process.env.CLIENT_URL}:${process.env.CLIENT_PORT}`,
+    origin: process.env.CLIENT_URL,
     methods: ["GET", "POST"],
     credentials: true,
   },
@@ -49,5 +49,5 @@ const { API_PORT } = process.env;
 const port = process.env.PORT || API_PORT;
 
 server.listen(port, () => {
-  console.log(`The server is on ${process.env.CLIENT_URL}:${port}`);
+  console.log(`The server is on ${process.env.SERVER_URL}:${port}`);
 });

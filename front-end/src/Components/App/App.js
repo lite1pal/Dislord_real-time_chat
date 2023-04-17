@@ -8,7 +8,7 @@ import Main from "../Main/Main";
 import Login from "../Login/Login";
 import SignUp from "../SignUp/SignUp";
 
-const apiUrl = "http://localhost:4001";
+const apiUrl = "https://dislord-chat-app.onrender.com";
 
 const socket = io.connect(`${apiUrl}`);
 
