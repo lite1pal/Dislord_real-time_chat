@@ -35,10 +35,10 @@ const sendMessage = async (req, res) => {
     const result = await query({
       text: `
     INSERT INTO messages (user_id, chat_id, message, user_name, sent_at)
-    VALUES ($1, $2, $3, $4, $5)
+    VALUES ($1, $2, $$${message}$$, $3, $4)
     RETURNING message_id
     `,
-      values: [user_id, chat_id, message, user_name, sent_at],
+      values: [user_id, chat_id, user_name, sent_at],
     });
     const message_id = result.rows[0].message_id;
     res
