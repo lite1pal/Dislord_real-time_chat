@@ -14,9 +14,11 @@ const ChatMessage = ({ message }) => {
           {message.sent_at}
         </span>
         <p
-          dangerouslySetInnerHTML={{ __html: message.message }}
+          // dangerouslySetInnerHTML={{ __html: message.message }}
           className="block text-gray-200"
-        ></p>
+        >
+          {message.message}
+        </p>
       </div>
       {/* <button className="text-red-500">Delete</button> */}
     </div>
