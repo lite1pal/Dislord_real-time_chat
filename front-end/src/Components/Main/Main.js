@@ -115,6 +115,8 @@ const Main = ({ setAuth, isAuth, socket, apiUrl }) => {
         '<a href="$1" target="_blank" rel="noopener noreferrer" style="color: #84D2F6">$1</a>'
       );
 
+      console.log(typeof message, message);
+
       const sent_at = new Date().toLocaleDateString("en-US", {
         month: "long",
         day: "numeric",
