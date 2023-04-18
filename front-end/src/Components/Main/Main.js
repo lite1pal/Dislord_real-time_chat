@@ -80,7 +80,7 @@ const Main = ({ setAuth, isAuth, socket, apiUrl }) => {
             {
               message_id: data.message_id,
               chat_id: data.chat_id,
-              message: data.message,
+              message: data.message.toString(),
               user_id: data.user_id,
               user_name: data.user_name,
               sent_at: data.sent_at,
