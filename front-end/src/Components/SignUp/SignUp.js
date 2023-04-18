@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./SignUp.css";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../Navbar/Navbar";
+import { Notify } from "notiflix/build/notiflix-notify-aio";
 
 const SignUp = ({ apiUrl, isAuth }) => {
   const redirect = useNavigate();
@@ -20,25 +21,33 @@ const SignUp = ({ apiUrl, isAuth }) => {
     e.preventDefault();
     try {
       const body = { username, email, age, password };
-      if (username && email && password) {
-        const requestOptions = {
-          method: "POST",
-          headers: { "Content-type": "application/json" },
-          body: JSON.stringify(body),
-        };
-        const response = await fetch(
-          `${apiUrl}/api/users/signup`,
-          requestOptions
-        );
-        if (response.ok) {
-          const parseRes = await response.json();
-          // document.cookie = `token=${parseRes}; path=/`;
-          console.log(parseRes);
-          redirect("/login");
-        } else {
-          const parseRes = await response.json();
-          console.log(parseRes);
-        }
+      if (!username || !email || !age || !password) {
+        return Notify.failure("All fields are required", {
+          position: "left-bottom",
+        });
+      }
+
+      if (age <= 0) {
+        return Notify.failure("Age has to be higher than 0");
+      }
+
+      const requestOptions = {
+        method: "POST",
+        headers: { "Content-type": "application/json" },
+        body: JSON.stringify(body),
+      };
+      const response = await fetch(
+        `${apiUrl}/api/users/signup`,
+        requestOptions
+      );
+      if (response.ok) {
+        const parseRes = await response.json();
+        // document.cookie = `token=${parseRes}; path=/`;
+        console.log(parseRes);
+        redirect("/login");
+      } else {
+        const parseRes = await response.json();
+        console.log(parseRes);
       }
     } catch (error) {
       console.error(error.message);
