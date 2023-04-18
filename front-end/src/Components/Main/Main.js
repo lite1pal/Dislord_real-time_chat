@@ -110,12 +110,12 @@ const Main = ({ setAuth, isAuth, socket, apiUrl }) => {
         /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi;
 
       // wraps URLs in <a> tags with target="_blank" to open in a new tab and rel="noopener noreferrer" for security
-      const message = input.replace(
-        regex,
-        '<a href="$1" target="_blank" rel="noopener noreferrer" style="color: #84D2F6">$1</a>'
-      );
-
-      console.log(typeof message, message);
+      const message = input
+        .replace(
+          regex,
+          '<a href="$1" target="_blank" rel="noopener noreferrer" style="color: #84D2F6">$1</a>'
+        )
+        .toString();
 
       const sent_at = new Date().toLocaleDateString("en-US", {
         month: "long",
