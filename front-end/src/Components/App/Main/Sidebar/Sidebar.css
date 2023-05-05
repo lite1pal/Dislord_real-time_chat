@@ -1,0 +1,13 @@
+.Sidebar {
+  background: rgb(70, 70, 84);
+  background: linear-gradient(
+    90deg,
+    rgba(70, 70, 84, 1) 0%,
+    rgba(20, 25, 25, 1) 100%,
+    rgba(20, 20, 20, 1) 100%
+  );
+  margin-left: 10px;
+  margin-bottom: 10px;
+  grid-row: 2 / -1;
+  grid-column: 1 / 2;
+}

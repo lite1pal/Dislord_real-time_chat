@@ -1,0 +1,19 @@
+.SidebarHeader {
+  font-size: 1vw;
+  margin: 5px;
+}
+
+.SidebarHeader ul {
+  display: flex;
+  justify-content: space-between;
+  margin: 0 15px;
+}
+
+.SidebarHeader li {
+  font-family: Georgia, "Times New Roman", Times, serif;
+  text-transform: uppercase;
+}
+
+.SidebarHeader i:hover {
+  opacity: 0.5;
+}

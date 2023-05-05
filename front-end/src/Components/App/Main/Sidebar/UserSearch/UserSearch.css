@@ -1,0 +1,45 @@
+.UserSearch {
+  margin: 10px;
+  height: 250px;
+  overflow-y: auto;
+}
+
+.UserSearch input {
+  width: 100%;
+  background-color: #f3f3f3;
+  border: none;
+  border-radius: 6px;
+  box-shadow: none;
+  color: #333;
+  font-size: 16px;
+  padding: 10px;
+}
+
+.UserSearch input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #7289da;
+}
+
+.UserSearch li {
+  margin: 5px;
+  padding: 5px;
+  background-color: #7289da;
+  border-radius: 3px;
+  transition: box-shadow 0.2s ease-in-out;
+}
+
+.UserSearch li.active {
+  box-shadow: 10px 5px 5px gray;
+}
+
+.UserSearch li.no-active {
+  box-shadow: 10px 5px 5px black;
+}
+
+.UserSearch li.no-active:hover {
+  box-shadow: 10px 5px 5px gray;
+}
+
+.UserSearch button {
+  margin-left: 80px;
+}

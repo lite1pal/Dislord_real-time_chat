@@ -4,9 +4,9 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import io from "socket.io-client";
 import Cookies from "js-cookie";
 
-import Main from "../Main/Main";
-import Login from "../Login/Login";
-import SignUp from "../SignUp/SignUp";
+import Main from "./Main/Main";
+import Login from "./Login/Login";
+import SignUp from "./SignUp/SignUp";
 
 const apiUrl = "https://dislord-chat-app.onrender.com";
 

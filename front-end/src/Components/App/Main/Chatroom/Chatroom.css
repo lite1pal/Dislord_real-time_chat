@@ -1,0 +1,9 @@
+.Chatroom {
+  background-image: url("../../../../../public/images/bg_chatroom.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  grid-row: 2 / -1;
+  grid-column: 2 / -1;
+}

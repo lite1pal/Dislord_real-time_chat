@@ -1,0 +1,15 @@
+.ChatMessage {
+  margin: 5px;
+  padding: 10px;
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+.ChatMessage .sender {
+  font-size: 1.5vw;
+  margin: 10px;
+  margin-right: 15px;
+}
+
+.ChatMessage .sender:hover {
+  text-decoration: underline;
+}

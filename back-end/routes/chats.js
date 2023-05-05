@@ -6,7 +6,7 @@ const {
   createChat,
   removeChat,
 } = require("../controllers/chatsController");
-const { auth } = require("../middlewares/auth");
+const { auth } = require("../middlewares/middlewares");
 
 chatsRouter.get("/:user_id", auth, getChatsOfUser);
 

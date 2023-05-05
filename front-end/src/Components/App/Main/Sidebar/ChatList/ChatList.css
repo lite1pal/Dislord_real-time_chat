@@ -1,0 +1,62 @@
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #2f3136;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #7289da;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #677bc4;
+}
+
+.ChatList {
+  height: 300px;
+  margin: 1px;
+  font-size: 1.3vw;
+  overflow-y: auto;
+}
+
+.ChatList li {
+  transition: box-shadow 0.2s ease-in-out;
+  margin-right: 15px;
+}
+
+.ChatList li.active {
+  box-shadow: 10px 5px 5px gray;
+}
+
+.ChatList li.no-active {
+  box-shadow: 10px 5px 5px black;
+}
+
+.ChatList li.no-active:hover {
+  box-shadow: 10px 5px 5px gray;
+}
+
+.chatlist-chat {
+  margin: 10px;
+  border-radius: 3px;
+}
+
+.chatlist-chat ul {
+  display: flex;
+  justify-content: space-between;
+  margin: 15px;
+}
+
+.chatlist-chat li {
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+    "Lucida Sans", Arial, sans-serif;
+}
+
+.chat-delete i:hover {
+  opacity: 0.5;
+}

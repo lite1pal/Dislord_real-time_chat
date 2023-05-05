@@ -18,6 +18,7 @@ require("dotenv").config();
 const usersRouter = require("./routes/users");
 const chatsRouter = require("./routes/chats");
 const messagesRouter = require("./routes/messages");
+const friendsRouter = require("./routes/friends");
 
 // sets up the middleware functions for the express app
 
@@ -52,6 +53,9 @@ app.use("/api/chats", chatsRouter);
 
 // mounts the messages routes at the '/api/messages' endpoint
 app.use("/api/messages", messagesRouter);
+
+// mounts the friends routes at the '/api/friends' endpoint
+app.use("/api/friends", friendsRouter);
 
 // exports the express app to use it in server.js
 module.exports = app;

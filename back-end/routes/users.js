@@ -1,23 +1,29 @@
 const express = require("express");
 const usersRouter = express.Router();
 
-const { auth } = require("../middlewares/auth");
+// my middlewares
+const {
+  auth,
+  validateInputCreateUser,
+  validateInputLoginUser,
+} = require("../middlewares/middlewares");
+
 const {
   getUsers,
-  getSingleUser,
-  updateSingleUser,
-  signUpUser,
-  logInUser,
+  getUserById,
+  updateUserById,
+  createUser,
+  loginUser,
 } = require("../controllers/usersController");
 
-usersRouter.get("/:userId", getSingleUser);
+usersRouter.get("/:userId", getUserById);
 
 usersRouter.get("/", getUsers);
 
-usersRouter.put("/:userId", updateSingleUser);
+usersRouter.put("/:userId", updateUserById);
 
-usersRouter.post("/signup", signUpUser);
+usersRouter.post("/signup", validateInputCreateUser, createUser);
 
-usersRouter.post("/login", logInUser);
+usersRouter.post("/login", validateInputLoginUser, loginUser);
 
 module.exports = usersRouter;

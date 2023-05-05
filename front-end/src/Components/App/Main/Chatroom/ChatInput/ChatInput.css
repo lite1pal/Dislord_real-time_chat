@@ -1,0 +1,19 @@
+.ChatInput {
+  margin: 10px;
+}
+
+.ChatInput form input {
+  width: 100%;
+  background-color: #f3f3f3;
+  border: none;
+  border-radius: 6px;
+  box-shadow: none;
+  color: #333;
+  font-size: 16px;
+  padding: 5px;
+}
+
+.ChatInput form input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #7289da;
+}

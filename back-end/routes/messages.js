@@ -4,7 +4,7 @@ const {
   getMessagesOfChat,
   sendMessage,
 } = require("../controllers/messagesController");
-const { auth } = require("../middlewares/auth");
+const { auth } = require("../middlewares/middlewares");
 
 messagesRouter.get("/:chatId", auth, getMessagesOfChat);
 
