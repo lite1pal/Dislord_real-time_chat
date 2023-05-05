@@ -66,7 +66,7 @@ const Sidebar = ({
 
         setTimeout(() => {
           moveScreenToBottom();
-        }, 25);
+        }, 50);
       } else {
         console.log(parseRes);
       }
