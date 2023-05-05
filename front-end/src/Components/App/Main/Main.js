@@ -150,7 +150,7 @@ const Main = ({ setAuth, isAuth, socket, apiUrl }) => {
         // scrolls messages div to the bottom after the message is added
         setTimeout(() => {
           moveScreenToBottom();
-        }, 50);
+        }, 100);
       } else {
         console.log(parseRes);
       }
