@@ -118,14 +118,14 @@ const Login = ({ setAuth, apiUrl, isAuth }) => {
                     Remember me
                   </label>
                 </div>
-                <div className="text-sm">
+                {/* <div className="text-sm">
                   <a
                     href="#"
                     className="font-medium text-blue-500 hover:text-blue-400"
                   >
                     Forgot your password?
                   </a>
-                </div>
+                </div> */}
               </div>
               <div>
                 <button

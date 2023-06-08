@@ -1,7 +1,8 @@
 .Chatroom {
-  background-image: url("../../../../../public/images/bg_chatroom.jpg");
+  /* background-image: url("../../../../../public/images/bg_chatroom.jpg");
   background-repeat: no-repeat;
-  background-size: cover;
+  background-size: cover; */
+  border: 1px solid rgba(0, 0, 0, 0.1);
   margin-right: 10px;
   margin-bottom: 10px;
   grid-row: 2 / -1;

@@ -24,7 +24,7 @@ const Navbar = ({ mainUser, setAuth, isAuth, route, title }) => {
               <li>
                 <button onClick={logOut}>Log Out</button>
               </li>
-              <li>
+              <li className="hidden">
                 <button>Friends</button>
               </li>
             </ul>
@@ -34,8 +34,8 @@ const Navbar = ({ mainUser, setAuth, isAuth, route, title }) => {
           </div>
         </nav>
       ) : (
-        <nav>
-          <div>Dislord</div>
+        <nav className="Navbar">
+          <div className="navbar-logo"></div>
           <ul>
             <li>
               <Link to={route}>{title}</Link>

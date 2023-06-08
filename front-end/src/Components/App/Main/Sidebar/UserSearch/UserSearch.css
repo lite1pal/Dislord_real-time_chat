@@ -1,6 +1,5 @@
 .UserSearch {
   margin: 10px;
-  height: 250px;
   overflow-y: auto;
 }
 
@@ -11,20 +10,23 @@
   border-radius: 6px;
   box-shadow: none;
   color: #333;
-  font-size: 16px;
+  font-size: 1.2em;
   padding: 10px;
 }
 
 .UserSearch input:focus {
   outline: none;
-  box-shadow: 0 0 0 2px #7289da;
+}
+
+.UserSearch ul {
+  height: 200px;
 }
 
 .UserSearch li {
   margin: 5px;
   padding: 5px;
-  background-color: #7289da;
-  border-radius: 3px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
   transition: box-shadow 0.2s ease-in-out;
 }
 
@@ -40,6 +42,16 @@
   box-shadow: 10px 5px 5px gray;
 }
 
+.UserSearch li span {
+  padding: 10px;
+  font-size: 1.3em;
+}
 .UserSearch button {
   margin-left: 80px;
+  font-size: 1em;
+  transition: 300ms;
+}
+
+.UserSearch button:hover {
+  font-size: 1.1em;
 }

@@ -3,13 +3,15 @@
   justify-content: space-between;
   align-items: center;
 
-  background: rgb(70, 70, 84);
+  /* background: rgb(99, 99, 112);
   background: linear-gradient(
     90deg,
     rgba(70, 70, 84, 1) 0%,
     rgba(54, 76, 80, 1) 100%,
     rgba(20, 20, 20, 1) 100%
-  );
+  ); */
+
+  /* background-color: #0c134f; */
 
   margin-top: 10px;
   margin-left: 10px;
@@ -18,7 +20,7 @@
   grid-row: 1 / 2;
   grid-column: 1 / -1;
 
-  font-size: 0.9cap;
+  font-size: 1.5em;
 }
 
 .navbar-logo {
@@ -39,6 +41,16 @@
 .navbar-links li {
   padding: 10px;
   margin-right: 70px;
+}
+
+.hidden {
+  opacity: 0;
+}
+
+.navbar-profile {
+  margin-right: 20px;
+  padding: 10px;
+  border: 1px solid currentColor;
 }
 
 @media only screen and (max-width: 500px) {

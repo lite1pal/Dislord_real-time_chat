@@ -19,26 +19,23 @@
 
 .ChatList {
   height: 300px;
-  margin: 1px;
-  font-size: 1.3vw;
+  font-size: 1.2em;
   overflow-y: auto;
+  /* border: 1px solid rgba(0, 0, 0, 0.1); */
 }
 
 .ChatList li {
   transition: box-shadow 0.2s ease-in-out;
   margin-right: 15px;
+  padding: 2px;
 }
 
 .ChatList li.active {
-  box-shadow: 10px 5px 5px gray;
-}
-
-.ChatList li.no-active {
-  box-shadow: 10px 5px 5px black;
+  background-color: rgba(0, 0, 0, 0.2);
 }
 
 .ChatList li.no-active:hover {
-  box-shadow: 10px 5px 5px gray;
+  background-color: rgba(0, 0, 0, 0.2);
 }
 
 .chatlist-chat {
@@ -53,8 +50,6 @@
 }
 
 .chatlist-chat li {
-  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
-    "Lucida Sans", Arial, sans-serif;
 }
 
 .chat-delete i:hover {
