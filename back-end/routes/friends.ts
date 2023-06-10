@@ -1,12 +1,11 @@
-const express = require("express");
+import express from "express";
 const friendsRouter = express.Router();
-const { auth } = require("../middlewares/middlewares");
-
-const {
+import { auth } from "../middlewares/middlewares";
+import {
   getFriendsOfUser,
   sendFriendRequest,
   removeFriend,
-} = require("../controllers/friendsController");
+} from "../controllers/friendsController";
 
 friendsRouter.get("/:user_id", getFriendsOfUser);
 
@@ -14,4 +13,4 @@ friendsRouter.post("/add_friend", sendFriendRequest);
 
 friendsRouter.delete("/remove_friend", removeFriend);
 
-module.exports = friendsRouter;
+export default friendsRouter;

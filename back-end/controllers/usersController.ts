@@ -1,23 +1,22 @@
 // third-party modules
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
-const { validationResult } = require("express-validator");
-
+import { validationResult } from "express-validator";
 // requires query func to write queries for database
-const { query } = require("../database/db");
+import query from "../database/db";
+
+import { Request, Response } from "express";
 
 // my functions to make a code more readable
-const {
+import {
   hashPassword,
   comparePassword,
   generateToken,
   updateUserToken,
   createNewUser,
   getUserByEmail,
-} = require("../helpers/utils");
+} from "../helpers/utils";
 
 // retrieves users from the database
-const getUsers = async (req, res) => {
+export const getUsers = async (req: Request, res: Response) => {
   /* try/catch helps to see what errors occured during async functions
      and fix them quickly as you know what a problem is */
   try {
@@ -35,7 +34,7 @@ const getUsers = async (req, res) => {
 };
 
 // Retrieves a single user from the Postgres database based on the provided id
-const getUserById = async (req, res, next) => {
+export const getUserById = async (req: Request, res: Response) => {
   try {
     // extracts userId from req.params using destructuring assignment
     const { userId } = req.params;
@@ -55,7 +54,7 @@ const getUserById = async (req, res, next) => {
 };
 
 // Updates a single user in the Postgres database based on the provided id
-const updateUserById = async (req, res) => {
+export const updateUserById = async (req: Request, res: Response) => {
   try {
     const { name, email, age, userId } = req.params;
     if (!name || !email || !age) {
@@ -75,7 +74,7 @@ const updateUserById = async (req, res) => {
 };
 
 // creates a new user
-const createUser = async (req, res) => {
+export const createUser = async (req: Request, res: Response) => {
   try {
     const { username, email, age, password } = req.body;
 
@@ -103,7 +102,7 @@ const createUser = async (req, res) => {
   }
 };
 
-const loginUser = async (req, res) => {
+export const loginUser = async (req: Request, res: Response) => {
   try {
     const { email, password, remember } = req.body;
 
@@ -134,12 +133,4 @@ const loginUser = async (req, res) => {
     console.error(error);
     res.status(500).json("Error logging the user in");
   }
-};
-
-module.exports = {
-  getUsers,
-  getUserById,
-  updateUserById,
-  createUser,
-  loginUser,
 };

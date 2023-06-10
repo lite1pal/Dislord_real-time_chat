@@ -1,35 +1,43 @@
 //third-party modules
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const { check } = require("express-validator");
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import { check } from "express-validator";
+import query from "../database/db";
 
-const { query } = require("../database/db");
+const TOKEN_KEY = process.env.TOKEN_KEY as string;
 
-const hashPassword = async (password) => {
+export const hashPassword = async (password: string) => {
   return await bcrypt.hash(password, 10);
 };
 
-const comparePassword = async (password, hashed_password) => {
+export const comparePassword = async (
+  password: string,
+  hashed_password: string
+) => {
   const isValidPassword = await bcrypt.compare(password, hashed_password);
   return isValidPassword;
 };
 
-const generateToken = async (user_id, email, remember) => {
+export const generateToken = async (
+  user_id: any,
+  email: string,
+  remember: boolean
+) => {
   return jwt.sign(
     { user_id, email },
-    process.env.TOKEN_KEY,
+    TOKEN_KEY,
     remember ? {} : { expiresIn: 600 }
   );
 };
 
-const updateUserToken = async (token, user_id) => {
+export const updateUserToken = async (token: string, user_id: any) => {
   await query({
     text: "UPDATE users SET token = $1 WHERE id = $2",
     values: [token, user_id],
   });
 };
 
-const createNewUser = async (username, email, age, hashedPassword) => {
+export const createNewUser = async (username, email, age, hashedPassword) => {
   const result = await query({
     text: `INSERT INTO users (username, email, age, hashed_password, token) 
       VALUES ($1, $2, $3, $4, '1') RETURNING *`,
@@ -38,19 +46,10 @@ const createNewUser = async (username, email, age, hashedPassword) => {
   return result.rows[0];
 };
 
-const getUserByEmail = async (email) => {
+export const getUserByEmail = async (email) => {
   const result = await query({
     text: `SELECT id, username, hashed_password FROM users WHERE email = $1`,
     values: [email],
   });
   return result.rows[0];
-};
-
-module.exports = {
-  hashPassword,
-  comparePassword,
-  generateToken,
-  updateUserToken,
-  createNewUser,
-  getUserByEmail,
 };

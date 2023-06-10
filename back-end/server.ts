@@ -1,15 +1,16 @@
 // imports http module
-const http = require("http");
+import http from "http";
 
 // imports the express app from ./app.js
-const app = require("./app");
+import app from "./app";
 
 // creates the server
 const server = http.createServer(app);
 
 // imports socket.io module
-const { Server } = require("socket.io");
-require("dotenv").config();
+import { Server } from "socket.io";
+import dotenv from "dotenv";
+dotenv.config();
 
 // configures the socket.io with specified cors options
 const io = new Server(server, {

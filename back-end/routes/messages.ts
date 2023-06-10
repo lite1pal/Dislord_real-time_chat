@@ -1,13 +1,13 @@
-const express = require("express");
+import express from "express";
 const messagesRouter = express.Router();
-const {
+import {
   getMessagesOfChat,
   sendMessage,
-} = require("../controllers/messagesController");
-const { auth } = require("../middlewares/middlewares");
+} from "../controllers/messagesController";
+import { auth } from "../middlewares/middlewares";
 
 messagesRouter.get("/:chatId", auth, getMessagesOfChat);
 
 messagesRouter.post("/:chatId/:userId", auth, sendMessage);
 
-module.exports = messagesRouter;
+export default messagesRouter;

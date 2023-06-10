@@ -1,20 +1,20 @@
-const express = require("express");
+import express from "express";
 const usersRouter = express.Router();
 
 // my middlewares
-const {
+import {
   auth,
   validateInputCreateUser,
   validateInputLoginUser,
-} = require("../middlewares/middlewares");
+} from "../middlewares/middlewares";
 
-const {
+import {
   getUsers,
   getUserById,
   updateUserById,
   createUser,
   loginUser,
-} = require("../controllers/usersController");
+} from "../controllers/usersController";
 
 usersRouter.get("/:userId", getUserById);
 
@@ -26,4 +26,4 @@ usersRouter.post("/signup", validateInputCreateUser, createUser);
 
 usersRouter.post("/login", validateInputLoginUser, loginUser);
 
-module.exports = usersRouter;
+export default usersRouter;

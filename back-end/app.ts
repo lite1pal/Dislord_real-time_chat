@@ -1,30 +1,29 @@
 // imports express.js package into express variable
-const express = require("express");
+import express from "express";
 
 // creates a new express application
 const app = express();
 
 // imports the body-parser, cookie-parser and cors modules
-const bodyParser = require("body-parser");
-const cookieParser = require("cookie-parser");
-const helmet = require("helmet");
-const cors = require("cors");
-const morgan = require("morgan");
+import cookieParser from "cookie-parser";
+import helmet from "helmet";
+import cors from "cors";
+import morgan from "morgan";
+import dotenv from "dotenv";
 
 // loads environment variables from .env in process.env object
-require("dotenv").config();
+dotenv.config();
 
 // imports the routers
-const usersRouter = require("./routes/users");
-const chatsRouter = require("./routes/chats");
-const messagesRouter = require("./routes/messages");
-const friendsRouter = require("./routes/friends");
+import usersRouter from "./routes/users";
+import chatsRouter from "./routes/chats";
+import messagesRouter from "./routes/messages";
+import friendsRouter from "./routes/friends";
 
 // sets up the middleware functions for the express app
 
-// parses incoming request bodies as JSON
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+// parses incoming requests in JSON
+app.use(express.json({ limit: "10kb", type: "application/json" }));
 
 // logs detailed info about requests
 app.use(morgan("dev"));
@@ -58,4 +57,4 @@ app.use("/api/messages", messagesRouter);
 app.use("/api/friends", friendsRouter);
 
 // exports the express app to use it in server.js
-module.exports = app;
+export default app;

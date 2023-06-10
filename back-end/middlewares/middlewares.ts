@@ -1,14 +1,17 @@
 // third-party modules
-const jwt = require("jsonwebtoken");
-const { body } = require("express-validator");
+import jwt from "jsonwebtoken";
+import { body } from "express-validator";
+import { Request, Response, NextFunction } from "express";
 
-const auth = (req, res, next) => {
-  const token = req.headers.authorization.split(" ")[1];
+const TOKEN_KEY = process.env.TOKEN_KEY as string;
+
+export const auth = (req: Request, res: Response, next: NextFunction) => {
   try {
-    const isToken = jwt.verify(token, process.env.TOKEN_KEY);
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(400).json("There is no token");
+    const isToken = jwt.verify(token, TOKEN_KEY);
     if (!isToken) {
-      res.status(400).json(`Invalid token or no token at all`);
-      return;
+      return res.status(400).json(`Invalid token or no token at all`);
     }
     next();
   } catch (error) {
@@ -18,7 +21,7 @@ const auth = (req, res, next) => {
   }
 };
 
-const validateInputCreateUser = [
+export const validateInputCreateUser = [
   body("username").notEmpty().withMessage("Username is required."),
   body("age")
     .notEmpty()
@@ -37,7 +40,7 @@ const validateInputCreateUser = [
     .withMessage("Password must to be at least 8 characters"),
 ];
 
-const validateInputLoginUser = [
+export const validateInputLoginUser = [
   body("email")
     .notEmpty()
     .withMessage("Email is required.")
@@ -52,5 +55,3 @@ const validateInputLoginUser = [
     .isBoolean()
     .withMessage("Remember has to be a boolean value"),
 ];
-
-module.exports = { auth, validateInputCreateUser, validateInputLoginUser };

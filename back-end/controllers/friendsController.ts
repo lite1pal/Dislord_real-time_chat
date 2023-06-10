@@ -1,6 +1,6 @@
-const { query } = require("../database/db");
+import query from "../database/db";
 
-const getFriendsOfUser = async (req, res) => {
+export const getFriendsOfUser = async (req, res) => {
   try {
     const { user_id } = req.params;
     if (!user_id) return res.status(404).json(`user_id is required.`);
@@ -17,7 +17,7 @@ const getFriendsOfUser = async (req, res) => {
   }
 };
 
-const getFriendById = async (req, res) => {
+export const getFriendById = async (req, res) => {
   try {
     return res.status(200).json("The friend was retrieved.");
   } catch (error) {
@@ -26,7 +26,7 @@ const getFriendById = async (req, res) => {
   }
 };
 
-const sendFriendRequest = async (req, res) => {
+export const sendFriendRequest = async (req, res) => {
   try {
     const { user_id, friend_id } = req.body;
     if (!user_id || !friend_id)
@@ -47,7 +47,7 @@ const sendFriendRequest = async (req, res) => {
   }
 };
 
-const updateRequestStatus = async (req, res) => {
+export const updateRequestStatus = async (req, res) => {
   try {
     const { user_id, friend_id } = req.body;
     if (!user_id || !friend_id)
@@ -64,7 +64,7 @@ const updateRequestStatus = async (req, res) => {
   }
 };
 
-const removeFriend = async (req, res) => {
+export const removeFriend = async (req, res) => {
   try {
     const { friend_id } = req.body;
     if (!friend_id)
@@ -81,5 +81,3 @@ const removeFriend = async (req, res) => {
     return res.status(500).json("Error removing a friend");
   }
 };
-
-module.exports = { getFriendsOfUser, sendFriendRequest, removeFriend };

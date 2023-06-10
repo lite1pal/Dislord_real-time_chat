@@ -1,6 +1,6 @@
-const { query } = require("../database/db");
+import query from "../database/db";
 
-const getChatsOfUser = async (req, res) => {
+export const getChatsOfUser = async (req, res) => {
   try {
     const { user_id } = req.params;
     if (!user_id) {
@@ -25,7 +25,7 @@ const getChatsOfUser = async (req, res) => {
   }
 };
 
-const createChat = async (req, res) => {
+export const createChat = async (req, res) => {
   try {
     const { user1_name, user2_name } = req.body;
 
@@ -61,7 +61,7 @@ const createChat = async (req, res) => {
   }
 };
 
-const removeChat = async (req, res) => {
+export const removeChat = async (req, res) => {
   try {
     const chat = req.body;
     if (!chat) return res.status(400).json(`Chat was not provided`);
@@ -84,5 +84,3 @@ const removeChat = async (req, res) => {
     res.status(500).json(`Error removing a chat from the database`);
   }
 };
-
-module.exports = { getChatsOfUser, createChat, removeChat };

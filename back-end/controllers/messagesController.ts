@@ -1,6 +1,6 @@
-const { query } = require("../database/db");
+import query from "../database/db";
 
-const getMessagesOfChat = async (req, res) => {
+export const getMessagesOfChat = async (req, res) => {
   try {
     if (!req.params.chatId) {
       return res.status(400).json(`Chat_id is not provided`);
@@ -21,7 +21,7 @@ const getMessagesOfChat = async (req, res) => {
   }
 };
 
-const sendMessage = async (req, res) => {
+export const sendMessage = async (req, res) => {
   try {
     const { user_id, chat_id, user_name, sent_at } = req.body;
     const message = req.body.message.replace(/'/g, "''");
@@ -49,5 +49,3 @@ const sendMessage = async (req, res) => {
     res.status(500).json(`Error sending the message`);
   }
 };
-
-module.exports = { getMessagesOfChat, sendMessage };
