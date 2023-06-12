@@ -13,4 +13,5 @@ usersRouter.get("/", usersController_1.getUsers);
 usersRouter.put("/:userId", usersController_1.updateUserById);
 usersRouter.post("/signup", middlewares_1.validateInputCreateUser, usersController_1.createUser);
 usersRouter.post("/login", middlewares_1.validateInputLoginUser, usersController_1.loginUser);
+usersRouter.delete("/delete/:user_id", usersController_1.deleteUser);
 exports.default = usersRouter;

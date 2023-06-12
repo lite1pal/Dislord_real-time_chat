@@ -23,11 +23,11 @@ const ChatList = ({
         {Array.isArray(chats) &&
           chats.map((chat) => (
             <li
-              className={activeChat === chat.chat_id ? "active" : "no-active"}
-              key={chat.chat_id}
+              className={activeChat === chat.id ? "active" : "no-active"}
+              key={chat.id}
               onClick={() => {
-                toggleFocus(chat.chat_id);
-                fetchMessages(chat.chat_id, chat.chat_name);
+                toggleFocus(chat.id);
+                fetchMessages(chat.id, chat.chat_name);
               }}
             >
               <div className="chatlist-chat">

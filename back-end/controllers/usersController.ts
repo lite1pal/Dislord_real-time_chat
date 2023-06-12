@@ -1,9 +1,12 @@
 // third-party modules
 import { validationResult } from "express-validator";
 // requires query func to write queries for database
-import query from "../database/db";
+import { pool } from "../database/db";
 
 import { Request, Response } from "express";
+
+// models
+import { User } from "../models/userModel";
 
 // my functions to make a code more readable
 import {
@@ -20,13 +23,11 @@ export const getUsers = async (req: Request, res: Response) => {
   /* try/catch helps to see what errors occured during async functions
      and fix them quickly as you know what a problem is */
   try {
-    // retrieves row data of users using async query function
-    const { rows } = await query(
-      `SELECT id, username, email, age, logged_in FROM users`
-    );
+    const users = await User.findAll({
+      attributes: ["id", "username", "email", "age", "logged_in"],
+    });
 
-    if (rows.length <= 0) return res.status(404).json(`There are no users`);
-    res.status(200).json(rows);
+    res.status(200).json(users);
   } catch (error) {
     console.error(error);
     res.status(500).send(`Error retrieving users from the database`);
@@ -40,16 +41,13 @@ export const getUserById = async (req: Request, res: Response) => {
     const { userId } = req.params;
 
     // retrieves the user from the database with specific id
-    const { rows } = await query({
-      text: `SELECT * FROM users WHERE id = $1`,
-      values: [userId],
-    });
+    const user = await User.findByPk(userId);
+    if (!user) return res.status(404).json("There is no user with such id");
 
-    if (rows.length <= 0) return res.sendStatus(404);
-    res.status(200).send(rows[0]);
+    return res.status(200).json(user);
   } catch (error) {
     console.error(error);
-    res.status(500).send(`Error retrieving the user from database`);
+    return res.status(500).json(`Error retrieving the user from database`);
   }
 };
 
@@ -61,15 +59,15 @@ export const updateUserById = async (req: Request, res: Response) => {
       return res.status(400).json(`There are no all required fields in query`);
     }
 
-    await query({
+    await pool.query({
       text: `UPDATE users SET name = $1, email = $2, age = $3 WHERE id = $4`,
       values: [name, email, age, userId],
     });
 
-    res.status(200).json();
+    return res.status(200).json();
   } catch (error) {
     console.error(error);
-    res.status(500).json(`Error updating the user in database`);
+    return res.status(500).json(`Error updating the user in database`);
   }
 };
 
@@ -86,16 +84,15 @@ export const createUser = async (req: Request, res: Response) => {
     // hashes the password
     const hashedPassword = await hashPassword(password);
 
-    // create a new user in database
-    const newUser = await createNewUser(username, email, age, hashedPassword);
+    const newUser = await User.create({
+      username,
+      email,
+      age,
+      hashed_password: hashedPassword,
+      token: "1",
+    });
 
-    // generates a new token to identificate the user
-    const token = await generateToken(newUser.id, email);
-
-    // updates user's token in the database
-    await updateUserToken(token, newUser.id);
-
-    return res.status(200).json(token);
+    return res.status(200).json({ newUser });
   } catch (error) {
     console.error(error);
     return res.status(500).json(`Error creating the user`);
@@ -106,7 +103,15 @@ export const loginUser = async (req: Request, res: Response) => {
   try {
     const { email, password, remember } = req.body;
 
-    const { id, username, hashed_password } = await getUserByEmail(email);
+    // const { id, username, hashed_password } = await getUserByEmail(email);
+    const existingUser = await User.findOne({
+      where: { email },
+    });
+    if (!existingUser) {
+      return res.status(400).json("There is no user with such email");
+    }
+
+    const { id, username, hashed_password } = existingUser.dataValues;
 
     if (!id || !username || !hashed_password) {
       return res.status(404).json(`Some of the select data is empty`);
@@ -114,7 +119,6 @@ export const loginUser = async (req: Request, res: Response) => {
 
     // compares the provided password with the database password
     const isValidPassword = await comparePassword(password, hashed_password);
-
     if (!isValidPassword) {
       return res.status(400).json(`Invalid password`);
     }
@@ -123,7 +127,8 @@ export const loginUser = async (req: Request, res: Response) => {
     const token = await generateToken(id, email, remember);
 
     // updates the user's token in the database
-    await updateUserToken(token, id);
+    // await updateUserToken(token, id);
+    await User.update({ token }, { where: { email } });
 
     res.status(200).json({
       token: token,
@@ -132,5 +137,21 @@ export const loginUser = async (req: Request, res: Response) => {
   } catch (error) {
     console.error(error);
     res.status(500).json("Error logging the user in");
+  }
+};
+
+export const deleteUser = async (req: Request, res: Response) => {
+  try {
+    const { user_id } = req.params;
+    if (!user_id)
+      return res.status(400).json("There is no user_id provided in req.params");
+
+    const deletedUser = await User.destroy({ where: { id: user_id } });
+    if (deletedUser === 0)
+      return res.status(404).json("There is no user with such id");
+    return res.status(200).json("User was deleted");
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json("Error deleting a user");
   }
 };

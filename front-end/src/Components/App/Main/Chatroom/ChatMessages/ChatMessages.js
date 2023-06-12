@@ -8,7 +8,7 @@ const ChatMessages = ({ curChat, messages, messagesRef }) => {
       <ul>
         {curChat.id && Array.isArray(messages[`${curChat.id}`]) ? (
           messages[`${curChat.id}`].map((message) => (
-            <li key={message.message_id}>
+            <li key={message.id}>
               <ChatMessage message={message} />
             </li>
           ))

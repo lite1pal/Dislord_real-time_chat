@@ -33,7 +33,7 @@ const Sidebar = ({
       const { user1_id, user2_id } = removedChat;
       if (mainUser.id == user1_id || mainUser.id == user2_id) {
         const newChats = chats.filter((chat) => {
-          return chat.chat_id != removedChat.chat_id;
+          return chat.id != removedChat.id;
         });
         setMessages({});
         setChats(newChats);
@@ -146,7 +146,7 @@ const Sidebar = ({
           position: "right-bottom",
         });
         const updatedChats = chats.filter((c) => {
-          return c.chat_id !== chat.chat_id;
+          return c.id !== chat.id;
         });
         socket.emit("remove chat", { updatedChats, removedChat: chat });
       } else {

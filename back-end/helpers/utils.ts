@@ -2,7 +2,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { check } from "express-validator";
-import query from "../database/db";
+import { pool } from "../database/db";
 
 const TOKEN_KEY = process.env.TOKEN_KEY as string;
 
@@ -19,9 +19,9 @@ export const comparePassword = async (
 };
 
 export const generateToken = async (
-  user_id: any,
+  user_id: number,
   email: string,
-  remember: boolean
+  remember: boolean = false
 ) => {
   return jwt.sign(
     { user_id, email },
@@ -31,14 +31,19 @@ export const generateToken = async (
 };
 
 export const updateUserToken = async (token: string, user_id: any) => {
-  await query({
+  await pool.query({
     text: "UPDATE users SET token = $1 WHERE id = $2",
     values: [token, user_id],
   });
 };
 
-export const createNewUser = async (username, email, age, hashedPassword) => {
-  const result = await query({
+export const createNewUser = async (
+  username: string,
+  email: string,
+  age: number,
+  hashedPassword: string
+) => {
+  const result = await pool.query({
     text: `INSERT INTO users (username, email, age, hashed_password, token) 
       VALUES ($1, $2, $3, $4, '1') RETURNING *`,
     values: [username, email, age, hashedPassword],
@@ -46,8 +51,8 @@ export const createNewUser = async (username, email, age, hashedPassword) => {
   return result.rows[0];
 };
 
-export const getUserByEmail = async (email) => {
-  const result = await query({
+export const getUserByEmail = async (email: string) => {
+  const result = await pool.query({
     text: `SELECT id, username, hashed_password FROM users WHERE email = $1`,
     values: [email],
   });

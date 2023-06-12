@@ -3,6 +3,13 @@ import validator from "validator";
 import "./ChatMessage.css";
 
 const ChatMessage = ({ message }) => {
+  const createdAt = new Date(message.createdAt).toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    year: "numeric",
+  });
   return (
     <div className="ChatMessage">
       <span className="sender">
@@ -10,7 +17,7 @@ const ChatMessage = ({ message }) => {
           {message.user_name}
         </a>
       </span>
-      <span className="sent_at"> {message.sent_at}</span>
+      <span className="sent_at"> {createdAt}</span>
       <div className="message">
         <p
           dangerouslySetInnerHTML={{

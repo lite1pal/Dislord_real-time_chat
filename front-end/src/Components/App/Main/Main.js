@@ -81,12 +81,13 @@ const Main = ({ setAuth, isAuth, socket, apiUrl }) => {
           [curChat.id]: [
             ...messages[curChat.id],
             {
-              message_id: data.message_id,
+              id: data.id,
               chat_id: data.chat_id,
               message: data.message,
               user_id: data.user_id,
               user_name: data.user_name,
-              sent_at: data.sent_at,
+              createdAt: data.createdAt,
+              updatedAt: data.updatedAt,
             },
           ],
         });
@@ -106,7 +107,7 @@ const Main = ({ setAuth, isAuth, socket, apiUrl }) => {
   const sendMessage = async (e) => {
     e.preventDefault();
     try {
-      // removes text off the message input after message is sent
+      // removes text off the message input after the message is sent
       e.target.message.value = "";
 
       const chat_id = curChat.id;
@@ -123,21 +124,21 @@ const Main = ({ setAuth, isAuth, socket, apiUrl }) => {
         '<a href="$1" target="_blank" rel="noopener noreferrer" style="color: #84D2F6">$1</a>'
       );
 
-      const sent_at = new Date().toLocaleDateString("en-US", {
-        month: "long",
-        day: "numeric",
-        hour: "numeric",
-        minute: "numeric",
-        year: "numeric",
-      });
+      // const sent_at = new Date().toLocaleDateString("en-US", {
+      //   month: "long",
+      //   day: "numeric",
+      //   hour: "numeric",
+      //   minute: "numeric",
+      //   year: "numeric",
+      // });
 
-      if (!chat_id || !user_id || !message || !user_name || !sent_at) {
+      if (!chat_id || !user_id || !message || !user_name) {
         return console.log(
           "Something from data is missing, check sendMessage() in Main.js"
         );
       }
 
-      const body = { chat_id, user_id, message, user_name, sent_at };
+      const body = { chat_id, user_id, message, user_name };
 
       const response = await fetch(
         `${apiUrl}/api/messages/${chat_id}/${user_id}`,

@@ -8,15 +8,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.loginUser = exports.createUser = exports.updateUserById = exports.getUserById = exports.getUsers = void 0;
+exports.deleteUser = exports.loginUser = exports.createUser = exports.updateUserById = exports.getUserById = exports.getUsers = void 0;
 // third-party modules
 const express_validator_1 = require("express-validator");
 // requires query func to write queries for database
-const db_1 = __importDefault(require("../database/db"));
+const db_1 = require("../database/db");
+// models
+const userModel_1 = require("../models/userModel");
 // my functions to make a code more readable
 const utils_1 = require("../helpers/utils");
 // retrieves users from the database
@@ -24,11 +23,10 @@ const getUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     /* try/catch helps to see what errors occured during async functions
        and fix them quickly as you know what a problem is */
     try {
-        // retrieves row data of users using async query function
-        const { rows } = yield (0, db_1.default)(`SELECT id, username, email, age, logged_in FROM users`);
-        if (rows.length <= 0)
-            return res.status(404).json(`There are no users`);
-        res.status(200).json(rows);
+        const users = yield userModel_1.User.findAll({
+            attributes: ["id", "username", "email", "age", "logged_in"],
+        });
+        res.status(200).json(users);
     }
     catch (error) {
         console.error(error);
@@ -42,17 +40,14 @@ const getUserById = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         // extracts userId from req.params using destructuring assignment
         const { userId } = req.params;
         // retrieves the user from the database with specific id
-        const { rows } = yield (0, db_1.default)({
-            text: `SELECT * FROM users WHERE id = $1`,
-            values: [userId],
-        });
-        if (rows.length <= 0)
-            return res.sendStatus(404);
-        res.status(200).send(rows[0]);
+        const user = yield userModel_1.User.findByPk(userId);
+        if (!user)
+            return res.status(404).json("There is no user with such id");
+        return res.status(200).json(user);
     }
     catch (error) {
         console.error(error);
-        res.status(500).send(`Error retrieving the user from database`);
+        return res.status(500).json(`Error retrieving the user from database`);
     }
 });
 exports.getUserById = getUserById;
@@ -63,15 +58,15 @@ const updateUserById = (req, res) => __awaiter(void 0, void 0, void 0, function*
         if (!name || !email || !age) {
             return res.status(400).json(`There are no all required fields in query`);
         }
-        yield (0, db_1.default)({
+        yield db_1.pool.query({
             text: `UPDATE users SET name = $1, email = $2, age = $3 WHERE id = $4`,
             values: [name, email, age, userId],
         });
-        res.status(200).json();
+        return res.status(200).json();
     }
     catch (error) {
         console.error(error);
-        res.status(500).json(`Error updating the user in database`);
+        return res.status(500).json(`Error updating the user in database`);
     }
 });
 exports.updateUserById = updateUserById;
@@ -85,13 +80,14 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             return res.status(400).json({ errors: errors.array() });
         // hashes the password
         const hashedPassword = yield (0, utils_1.hashPassword)(password);
-        // create a new user in database
-        const newUser = yield (0, utils_1.createNewUser)(username, email, age, hashedPassword);
-        // generates a new token to identificate the user
-        const token = yield (0, utils_1.generateToken)(newUser.id, email);
-        // updates user's token in the database
-        yield (0, utils_1.updateUserToken)(token, newUser.id);
-        return res.status(200).json(token);
+        const newUser = yield userModel_1.User.create({
+            username,
+            email,
+            age,
+            hashed_password: hashedPassword,
+            token: "1",
+        });
+        return res.status(200).json({ newUser });
     }
     catch (error) {
         console.error(error);
@@ -102,7 +98,14 @@ exports.createUser = createUser;
 const loginUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { email, password, remember } = req.body;
-        const { id, username, hashed_password } = yield (0, utils_1.getUserByEmail)(email);
+        // const { id, username, hashed_password } = await getUserByEmail(email);
+        const existingUser = yield userModel_1.User.findOne({
+            where: { email },
+        });
+        if (!existingUser) {
+            return res.status(400).json("There is no user with such email");
+        }
+        const { id, username, hashed_password } = existingUser.dataValues;
         if (!id || !username || !hashed_password) {
             return res.status(404).json(`Some of the select data is empty`);
         }
@@ -114,7 +117,8 @@ const loginUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         // generates a new token
         const token = yield (0, utils_1.generateToken)(id, email, remember);
         // updates the user's token in the database
-        yield (0, utils_1.updateUserToken)(token, id);
+        // await updateUserToken(token, id);
+        yield userModel_1.User.update({ token }, { where: { email } });
         res.status(200).json({
             token: token,
             user: { id: id, username: username, email: email },
@@ -126,3 +130,19 @@ const loginUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.loginUser = loginUser;
+const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { user_id } = req.params;
+        if (!user_id)
+            return res.status(400).json("There is no user_id provided in req.params");
+        const deletedUser = yield userModel_1.User.destroy({ where: { id: user_id } });
+        if (deletedUser === 0)
+            return res.status(404).json("There is no user with such id");
+        return res.status(200).json("User was deleted");
+    }
+    catch (error) {
+        console.error(error);
+        return res.status(500).json("Error deleting a user");
+    }
+});
+exports.deleteUser = deleteUser;

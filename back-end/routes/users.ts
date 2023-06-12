@@ -14,6 +14,7 @@ import {
   updateUserById,
   createUser,
   loginUser,
+  deleteUser,
 } from "../controllers/usersController";
 
 usersRouter.get("/:userId", getUserById);
@@ -25,5 +26,7 @@ usersRouter.put("/:userId", updateUserById);
 usersRouter.post("/signup", validateInputCreateUser, createUser);
 
 usersRouter.post("/login", validateInputLoginUser, loginUser);
+
+usersRouter.delete("/delete/:user_id", deleteUser);
 
 export default usersRouter;

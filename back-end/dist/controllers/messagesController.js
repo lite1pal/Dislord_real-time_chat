@@ -8,59 +8,69 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sendMessage = exports.getMessagesOfChat = void 0;
-const db_1 = __importDefault(require("../database/db"));
+const messageModel_1 = require("../models/messageModel");
 const getMessagesOfChat = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         if (!req.params.chatId) {
             return res.status(400).json(`Chat_id is not provided`);
         }
         const { chatId } = req.params;
-        const chatMessages = yield (0, db_1.default)({
-            text: `
-    SELECT *
-    FROM messages
-    WHERE chat_id = $1
-    `,
-            values: [chatId],
-        });
-        res.status(200).json(chatMessages.rows);
+        // const chatMessages = await pool.query({
+        //   text: `
+        // SELECT *
+        // FROM messages
+        // WHERE chat_id = $1
+        // `,
+        //   values: [chatId],
+        // });
+        const chatMessages = yield messageModel_1.Message.findAll({ where: { chat_id: chatId } });
+        return res.status(200).json(chatMessages);
     }
     catch (error) {
         console.error(error);
-        res.status(500).json(`Error retrieving messages from the chat`);
+        return res.status(500).json(`Error retrieving messages from the chat`);
     }
 });
 exports.getMessagesOfChat = getMessagesOfChat;
 const sendMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { user_id, chat_id, user_name, sent_at } = req.body;
+        const { user_id, chat_id, user_name } = req.body;
         const message = req.body.message.replace(/'/g, "''");
-        if (!user_id || !chat_id || !message || !user_name || !sent_at) {
+        if (!user_id || !chat_id || !message || !user_name) {
             return res
                 .status(400)
                 .json(`Body data is not complete. Check what body values you sent as a request`);
         }
-        const result = yield (0, db_1.default)({
-            text: `
-    INSERT INTO messages (user_id, chat_id, message, user_name, sent_at)
-    VALUES ($1, $2, $3, $4, $5)
-    RETURNING message_id
-    `,
-            values: [user_id, chat_id, message, user_name, sent_at],
+        // const result = await pool.query({
+        //   text: `
+        // INSERT INTO messages (user_id, chat_id, message, user_name, sent_at)
+        // VALUES ($1, $2, $3, $4, $5)
+        // RETURNING message_id
+        // `,
+        //   values: [user_id, chat_id, message, user_name, sent_at],
+        // });
+        const newMessage = yield messageModel_1.Message.create({
+            user_id,
+            chat_id,
+            message,
+            user_name,
         });
-        const message_id = result.rows[0].message_id;
-        res
-            .status(200)
-            .json({ message_id, user_id, chat_id, message, user_name, sent_at });
+        // const message_id = newMessage.dataValues.id;
+        // return res.status(200).json({
+        //   message_id,
+        //   user_id,
+        //   chat_id,
+        //   message,
+        //   user_name,
+        //   sent_at: newMessage.dataValues.createdAt,
+        // });
+        return res.status(200).json(newMessage);
     }
     catch (error) {
         console.error(error);
-        res.status(500).json(`Error sending the message`);
+        return res.status(500).json(`Error sending the message`);
     }
 });
 exports.sendMessage = sendMessage;
