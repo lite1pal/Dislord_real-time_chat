@@ -33,6 +33,15 @@ const ChatList = ({
               <div className="chatlist-chat">
                 <ul>
                   <li>
+                    <img
+                      width="50"
+                      height="50"
+                      src={
+                        chat.user1_id == mainUser.id
+                          ? chat.user2_avatar_url
+                          : chat.user1_avatar_url
+                      }
+                    />
                     {chat.chat_name
                       .split(", ")
                       .filter((user) => user !== mainUser.username)}

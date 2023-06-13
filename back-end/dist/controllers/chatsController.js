@@ -19,13 +19,6 @@ const getChatsOfUser = (req, res) => __awaiter(void 0, void 0, void 0, function*
         if (!user_id) {
             return res.status(400).json("user_id is missing from req.params");
         }
-        //   const result = await pool.query({
-        //     text: `
-        //   SELECT * FROM chats
-        //   WHERE user1_id = $1 OR user2_id = $1
-        // `,
-        //     values: [user_id],
-        //   });
         const chats = yield chatModel_1.Chat.findAll({
             where: {
                 [sequelize_1.Op.or]: {
@@ -38,10 +31,6 @@ const getChatsOfUser = (req, res) => __awaiter(void 0, void 0, void 0, function*
                 },
             },
         });
-        // if (result.rows.length === 0) {
-        //   return res.status(400).json(`There are no chats with this user`);
-        // }
-        // const chats = result.rows;
         res.status(200).json(chats);
     }
     catch (error) {
@@ -53,31 +42,22 @@ const getChatsOfUser = (req, res) => __awaiter(void 0, void 0, void 0, function*
 exports.getChatsOfUser = getChatsOfUser;
 const createChat = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { user1_name, user2_name } = req.body;
-        if (!user1_name || !user2_name)
-            return res.status(400).json(`Some of the username is missed in body`);
+        const { user1_name, user2_name, user1_avatar_url, user2_avatar_url } = req.body;
+        if (!user1_name || !user2_name || !user1_avatar_url || !user2_avatar_url)
+            return res.status(400).json(`Some of the body values are missing`);
         if (!req.params.user1_id || !req.params.user2_id)
             return res.status(400).json(`Some of the id is not provided in params`);
         if (req.params.user1_id === req.params.user2_id)
             return res.status(400).json(`User cannot create a chat with himself`);
         const chat_name = `${user1_name}, ${user2_name}`;
         const { user1_id, user2_id } = req.params;
-        // const result = await pool.query({
-        //   text: `
-        // INSERT INTO chats (user1_id, user2_id, chat_name)
-        // VALUES ($1, $2, $3)
-        // RETURNING chat_id
-        // `,
-        //   values: [user1_id, user2_id, chat_name],
-        // });
-        // const newChat_id = result.rows[0].chat_id;
-        const newChat = yield chatModel_1.Chat.create({ user1_id, user2_id, chat_name });
-        // res.status(200).json({
-        //   chat_id: newChat.dataValues.id,
-        //   user1_id: req.params.user1_id,
-        //   user2_id: req.params.user2_id,
-        //   chat_name: chat_name,
-        // });
+        const newChat = yield chatModel_1.Chat.create({
+            user1_id,
+            user2_id,
+            chat_name,
+            user1_avatar_url,
+            user2_avatar_url,
+        });
         return res.status(200).json(newChat);
     }
     catch (error) {
@@ -94,19 +74,7 @@ const removeChat = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             return res.status(400).json(`Chat was not provided`);
         if (!chat.id)
             return res.status(400).json(`Chat's id is missing`);
-        //     await pool.query({
-        //       text: `
-        //     DELETE FROM messages
-        //     WHERE chat_id = $1
-        // `,
-        //       values: [chat.chat_id],
-        //     });
         yield messageModel_1.Message.destroy({ where: { chat_id: chat.id } });
-        // await pool.query({
-        //   text: `DELETE FROM chats
-        // WHERE chat_id = $1`,
-        //   values: [chat.chat_id],
-        // });
         yield chatModel_1.Chat.destroy({ where: { id: chat.id } });
         res.status(200).json(`Chat ${chat.chat_name} is removed`);
     }

@@ -4,6 +4,7 @@ import "./Login.css";
 import Navbar from "../Navbar/Navbar";
 import Cookies from "js-cookie";
 import { Notify } from "notiflix";
+import { GoogleLogin } from "@react-oauth/google";
 
 const Login = ({ setAuth, apiUrl, isAuth }) => {
   const redirect = useNavigate();
@@ -58,6 +59,43 @@ const Login = ({ setAuth, apiUrl, isAuth }) => {
       }
     } catch (error) {
       Notify.failure("Logging was failed");
+      console.error(error.message);
+    }
+  };
+
+  const authGoogle = async (tokenGoogle) => {
+    try {
+      const body = { tokenGoogle };
+      const requestOptions = {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify(body),
+      };
+      const response = await fetch(
+        `${apiUrl}/api/users/authGoogle`,
+        requestOptions
+      );
+      const parseRes = await response.json();
+      if (response.ok) {
+        const { token } = parseRes;
+        const { id, username, email } = parseRes.user;
+        const { user_avatar } = parseRes;
+        Cookies.set("token", token);
+        Cookies.set("id", id);
+        Cookies.set("username", username);
+        Cookies.set("email", email);
+        Cookies.set("avatar_url", user_avatar);
+        Notify.success("You logged in successfully");
+        setAuth(true);
+        redirect("/main");
+      } else {
+        Notify.failure("Something went wrong. Maybe try again?");
+        console.error(parseRes);
+      }
+    } catch (error) {
+      Notify.failure("Signing in via Google was failed");
       console.error(error.message);
     }
   };
@@ -135,6 +173,16 @@ const Login = ({ setAuth, apiUrl, isAuth }) => {
                   Log in
                 </button>
               </div>
+              <GoogleLogin
+                onSuccess={(credentialResponse) => {
+                  authGoogle(credentialResponse.credential);
+                }}
+                onError={() => {
+                  Notify.failure("Signing in via Google was failed");
+                }}
+                useOneTap
+                shape="circle"
+              />
             </form>
           </div>
         </div>

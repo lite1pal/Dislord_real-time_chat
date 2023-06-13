@@ -18,7 +18,7 @@ const UserSearch = ({ onChangeSearchUsers, foundUsers, onClickCreateChat }) => {
               <li key={user.id}>
                 <span>{user.username}</span>
                 <button onClick={() => onClickCreateChat(user)}>
-                  <i class="fa-sharp fa-solid fa-plus fa-xl"></i>
+                  <i className="fa-sharp fa-solid fa-plus fa-xl"></i>
                 </button>
               </li>
             );

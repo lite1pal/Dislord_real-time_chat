@@ -48,9 +48,20 @@
 }
 
 .navbar-profile {
+  display: flex;
   margin-right: 20px;
   padding: 10px;
   border: 1px solid currentColor;
+}
+
+.navbar-profile img {
+  display: inline;
+  margin-right: 10px;
+  border-radius: 50%;
+}
+
+.navbar-profile span {
+  margin: auto 0;
 }
 
 @media only screen and (max-width: 500px) {

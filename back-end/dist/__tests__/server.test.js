@@ -16,15 +16,22 @@ const supertest_1 = __importDefault(require("supertest"));
 const app_1 = __importDefault(require("../app"));
 let newUser = { id: "", username: "", email: "", age: 0, password: "" };
 describe("User", () => {
+    beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
+        newUser = {
+            id: "",
+            username: "test42891",
+            email: "tes234891@gmail.com",
+            age: 1,
+            password: "test12345",
+        };
+        const response = yield (0, supertest_1.default)(app_1.default).post("/api/users/signup").send(newUser);
+        newUser = response.body.newUser;
+    }));
+    afterAll(() => __awaiter(void 0, void 0, void 0, function* () {
+        yield (0, supertest_1.default)(app_1.default).delete(`/api/users/delete/${newUser.id}`);
+    }));
     describe("createUser", () => {
         test("should create a user", () => __awaiter(void 0, void 0, void 0, function* () {
-            newUser = {
-                id: "",
-                username: "test42891",
-                email: "tes234891@gmail.com",
-                age: 1,
-                password: "test12345",
-            };
             const response = yield (0, supertest_1.default)(app_1.default)
                 .post("/api/users/signup")
                 .send(newUser);

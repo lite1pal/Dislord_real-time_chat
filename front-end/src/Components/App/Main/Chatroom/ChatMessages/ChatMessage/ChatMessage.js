@@ -13,6 +13,7 @@ const ChatMessage = ({ message }) => {
   return (
     <div className="ChatMessage">
       <span className="sender">
+        <img width="50" height="50" src={message.avatar_url} />
         <a href="#" tabIndex="-1">
           {message.user_name}
         </a>

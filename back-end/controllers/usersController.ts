@@ -1,7 +1,5 @@
 // third-party modules
 import { validationResult } from "express-validator";
-// requires query func to write queries for database
-import { pool } from "../database/db";
 
 import { Request, Response } from "express";
 
@@ -9,14 +7,8 @@ import { Request, Response } from "express";
 import { User } from "../models/userModel";
 
 // my functions to make a code more readable
-import {
-  hashPassword,
-  comparePassword,
-  generateToken,
-  updateUserToken,
-  createNewUser,
-  getUserByEmail,
-} from "../helpers/utils";
+import { hashPassword, comparePassword, generateToken } from "../helpers/utils";
+import { verifyJWT } from "../services/google";
 
 // retrieves users from the database
 export const getUsers = async (req: Request, res: Response) => {
@@ -24,7 +16,7 @@ export const getUsers = async (req: Request, res: Response) => {
      and fix them quickly as you know what a problem is */
   try {
     const users = await User.findAll({
-      attributes: ["id", "username", "email", "age", "logged_in"],
+      attributes: ["id", "username", "email", "age", "logged_in", "avatar_url"],
     });
 
     res.status(200).json(users);
@@ -58,11 +50,6 @@ export const updateUserById = async (req: Request, res: Response) => {
     if (!name || !email || !age) {
       return res.status(400).json(`There are no all required fields in query`);
     }
-
-    await pool.query({
-      text: `UPDATE users SET name = $1, email = $2, age = $3 WHERE id = $4`,
-      values: [name, email, age, userId],
-    });
 
     return res.status(200).json();
   } catch (error) {
@@ -130,13 +117,60 @@ export const loginUser = async (req: Request, res: Response) => {
     // await updateUserToken(token, id);
     await User.update({ token }, { where: { email } });
 
-    res.status(200).json({
+    return res.status(200).json({
       token: token,
       user: { id: id, username: username, email: email },
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json("Error logging the user in");
+    return res.status(500).json("Error logging the user in");
+  }
+};
+
+export const authGoogle = async (req: Request, res: Response) => {
+  try {
+    const { tokenGoogle } = req.body;
+    if (!tokenGoogle) return res.status(400).json("Google token is missing");
+    const user = await verifyJWT(process.env.GOOGLE_CLIENT_ID, tokenGoogle);
+    if (!user) return res.status(401).json("Token was not verified by Google");
+
+    const existingUser = await User.findOne({ where: { email: user.email } });
+    let token: string;
+    if (!existingUser) {
+      const newUser = await User.create({
+        username: user.name,
+        email: user.email,
+        age: 0,
+        hashed_password: user.sub,
+        avatar_url: user.picture,
+        token: "1",
+      });
+      const { id, username, email } = newUser.dataValues;
+      token = await generateToken(id, email);
+      await User.update({ token }, { where: { email } });
+      return res.status(200).json({
+        token,
+        user: {
+          id,
+          username,
+          email,
+        },
+        user_avatar: user.picture,
+        message: "User was authenticated via Google",
+      });
+    } else {
+      token = await generateToken(1, "some@gmail.com");
+      await User.update({ token }, { where: { email: user.email } });
+      return res.status(200).json({
+        token,
+        user: existingUser,
+        user_avatar: user.picture,
+        message: "User was authenticated via Google",
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json("Error signing user in via Google");
   }
 };
 

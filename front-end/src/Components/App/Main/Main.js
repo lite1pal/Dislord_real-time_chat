@@ -52,10 +52,10 @@ const Main = ({ setAuth, isAuth, socket, apiUrl }) => {
         );
         const parseRes = await response.json();
         if (response.ok) {
-          const fetchedUsers = parseRes.filter((user) => {
-            return user.id != Cookies.get("id");
-          });
-          setUsers(fetchedUsers);
+          // const fetchedUsers = parseRes.filter((user) => {
+          //   return user.id != Cookies.get("id");
+          // });
+          setUsers(parseRes);
         } else {
           console.log(parseRes);
         }
@@ -68,6 +68,7 @@ const Main = ({ setAuth, isAuth, socket, apiUrl }) => {
       id: Cookies.get("id"),
       username: Cookies.get("username"),
       email: Cookies.get("email"),
+      avatar_url: Cookies.get("avatar_url"),
     });
     fetchChats();
     fetchUsers();
@@ -86,6 +87,7 @@ const Main = ({ setAuth, isAuth, socket, apiUrl }) => {
               message: data.message,
               user_id: data.user_id,
               user_name: data.user_name,
+              avatar_url: data.avatar_url,
               createdAt: data.createdAt,
               updatedAt: data.updatedAt,
             },
@@ -113,6 +115,7 @@ const Main = ({ setAuth, isAuth, socket, apiUrl }) => {
       const chat_id = curChat.id;
       const user_id = mainUser.id;
       const user_name = mainUser.username;
+      const avatar_url = mainUser.avatar_url;
 
       // matches URLs starting with http, https, ftp, or file
       const regex =
@@ -124,21 +127,13 @@ const Main = ({ setAuth, isAuth, socket, apiUrl }) => {
         '<a href="$1" target="_blank" rel="noopener noreferrer" style="color: #84D2F6">$1</a>'
       );
 
-      // const sent_at = new Date().toLocaleDateString("en-US", {
-      //   month: "long",
-      //   day: "numeric",
-      //   hour: "numeric",
-      //   minute: "numeric",
-      //   year: "numeric",
-      // });
-
-      if (!chat_id || !user_id || !message || !user_name) {
+      if (!chat_id || !user_id || !message || !user_name || !avatar_url) {
         return console.log(
           "Something from data is missing, check sendMessage() in Main.js"
         );
       }
 
-      const body = { chat_id, user_id, message, user_name };
+      const body = { chat_id, user_id, message, user_name, avatar_url };
 
       const response = await fetch(
         `${apiUrl}/api/messages/${chat_id}/${user_id}`,

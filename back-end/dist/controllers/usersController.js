@@ -9,22 +9,21 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteUser = exports.loginUser = exports.createUser = exports.updateUserById = exports.getUserById = exports.getUsers = void 0;
+exports.deleteUser = exports.authGoogle = exports.loginUser = exports.createUser = exports.updateUserById = exports.getUserById = exports.getUsers = void 0;
 // third-party modules
 const express_validator_1 = require("express-validator");
-// requires query func to write queries for database
-const db_1 = require("../database/db");
 // models
 const userModel_1 = require("../models/userModel");
 // my functions to make a code more readable
 const utils_1 = require("../helpers/utils");
+const google_1 = require("../services/google");
 // retrieves users from the database
 const getUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     /* try/catch helps to see what errors occured during async functions
        and fix them quickly as you know what a problem is */
     try {
         const users = yield userModel_1.User.findAll({
-            attributes: ["id", "username", "email", "age", "logged_in"],
+            attributes: ["id", "username", "email", "age", "logged_in", "avatar_url"],
         });
         res.status(200).json(users);
     }
@@ -58,10 +57,6 @@ const updateUserById = (req, res) => __awaiter(void 0, void 0, void 0, function*
         if (!name || !email || !age) {
             return res.status(400).json(`There are no all required fields in query`);
         }
-        yield db_1.pool.query({
-            text: `UPDATE users SET name = $1, email = $2, age = $3 WHERE id = $4`,
-            values: [name, email, age, userId],
-        });
         return res.status(200).json();
     }
     catch (error) {
@@ -119,17 +114,67 @@ const loginUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         // updates the user's token in the database
         // await updateUserToken(token, id);
         yield userModel_1.User.update({ token }, { where: { email } });
-        res.status(200).json({
+        return res.status(200).json({
             token: token,
             user: { id: id, username: username, email: email },
         });
     }
     catch (error) {
         console.error(error);
-        res.status(500).json("Error logging the user in");
+        return res.status(500).json("Error logging the user in");
     }
 });
 exports.loginUser = loginUser;
+const authGoogle = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { tokenGoogle } = req.body;
+        if (!tokenGoogle)
+            return res.status(400).json("Google token is missing");
+        const user = yield (0, google_1.verifyJWT)(process.env.GOOGLE_CLIENT_ID, tokenGoogle);
+        if (!user)
+            return res.status(401).json("Token was not verified by Google");
+        const existingUser = yield userModel_1.User.findOne({ where: { email: user.email } });
+        let token;
+        if (!existingUser) {
+            const newUser = yield userModel_1.User.create({
+                username: user.name,
+                email: user.email,
+                age: 0,
+                hashed_password: user.sub,
+                avatar_url: user.picture,
+                token: "1",
+            });
+            const { id, username, email } = newUser.dataValues;
+            token = yield (0, utils_1.generateToken)(id, email);
+            yield userModel_1.User.update({ token }, { where: { email } });
+            return res.status(200).json({
+                token,
+                user: {
+                    id,
+                    username,
+                    email,
+                },
+                user_avatar: user.picture,
+                message: "User was authenticated via Google",
+            });
+        }
+        else {
+            token = yield (0, utils_1.generateToken)(1, "some@gmail.com");
+            yield userModel_1.User.update({ token }, { where: { email: user.email } });
+            return res.status(200).json({
+                token,
+                user: existingUser,
+                user_avatar: user.picture,
+                message: "User was authenticated via Google",
+            });
+        }
+    }
+    catch (error) {
+        console.error(error);
+        return res.status(500).json("Error signing user in via Google");
+    }
+});
+exports.authGoogle = authGoogle;
 const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { user_id } = req.params;

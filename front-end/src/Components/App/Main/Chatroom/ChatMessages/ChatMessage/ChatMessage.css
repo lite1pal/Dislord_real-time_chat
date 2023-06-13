@@ -10,6 +10,12 @@
   margin-right: 15px;
 }
 
+.ChatMessage .sender img {
+  display: inline;
+  border-radius: 50%;
+  margin-right: 15px;
+}
+
 .ChatMessage .sender:hover {
   text-decoration: underline;
 }

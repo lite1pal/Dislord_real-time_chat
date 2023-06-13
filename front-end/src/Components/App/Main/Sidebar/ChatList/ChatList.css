@@ -49,7 +49,10 @@
   margin: 15px;
 }
 
-.chatlist-chat li {
+.chatlist-chat img {
+  display: inline;
+  margin-right: 10px;
+  border-radius: 50%;
 }
 
 .chat-delete i:hover {

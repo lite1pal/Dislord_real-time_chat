@@ -24,14 +24,3 @@ export const Friend = sequelize.define("Friend", {
 
 Friend.belongsTo(User, { foreignKey: "user1_id" });
 Friend.belongsTo(User, { foreignKey: "user2_id" });
-
-// const syncModels = async () => {
-//   try {
-//     await sequelize.sync({ force: false });
-//     console.log("Models have been synchronized with database");
-//   } catch (error) {
-//     console.error(error);
-//   }
-// };
-
-// syncModels();

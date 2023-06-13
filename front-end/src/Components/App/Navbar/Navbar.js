@@ -30,6 +30,7 @@ const Navbar = ({ mainUser, setAuth, isAuth, route, title }) => {
             </ul>
           </div>
           <div className="navbar-profile">
+            <img width="75" height="75" src={Cookies.get("avatar_url")} />
             <span>{mainUser["username"] ? mainUser["username"] : ""}</span>
           </div>
         </nav>

@@ -14,6 +14,10 @@ exports.Chat = db_1.sequelize.define("Chat", {
             key: "id",
         },
     },
+    user1_avatar_url: {
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: false,
+    },
     user2_id: {
         type: sequelize_1.DataTypes.INTEGER,
         allowNull: false,
@@ -22,15 +26,10 @@ exports.Chat = db_1.sequelize.define("Chat", {
             key: "id",
         },
     },
+    user2_avatar_url: {
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: false,
+    },
 });
-exports.Chat.belongsTo(userModel_1.User, { foreignKey: "user1_id", as: "user1" });
-exports.Chat.belongsTo(userModel_1.User, { foreignKey: "user2_id", as: "user2" });
-// const syncModels = async () => {
-//   try {
-//     await sequelize.sync({ force: false });
-//     console.log("Models have been synchronized with database");
-//   } catch (error) {
-//     console.error(error);
-//   }
-// };
-// syncModels();
+exports.Chat.belongsTo(userModel_1.User, { foreignKey: "user1_id" });
+exports.Chat.belongsTo(userModel_1.User, { foreignKey: "user2_id" });

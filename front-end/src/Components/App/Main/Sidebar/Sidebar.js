@@ -94,9 +94,20 @@ const Sidebar = ({
 
   const onClickCreateChat = async (user) => {
     try {
-      const body = { user1_name: mainUser.username, user2_name: user.username };
-      if (!body.user1_name || !body.user2_name)
-        return console.log("Some of the username is missed");
+      const body = {
+        user1_name: mainUser.username,
+        user2_name: user.username,
+        user1_avatar_url: mainUser.avatar_url,
+        user2_avatar_url: user.avatar_url,
+      };
+      console.log(body);
+      if (
+        !body.user1_name ||
+        !body.user2_name ||
+        !body.user1_avatar_url ||
+        !body.user2_avatar_url
+      )
+        return console.log("Some of the body values is missed");
 
       // check if there is a chat with these users already
       const isChat = chats.some((chat) => {

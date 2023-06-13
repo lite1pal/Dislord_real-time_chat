@@ -23,6 +23,7 @@ export const Message = sequelize.define("Message", {
     },
   },
   user_name: { type: DataTypes.STRING, allowNull: false },
+  avatar_url: { type: DataTypes.STRING, allowNull: false },
 });
 
 Message.belongsTo(Chat, { foreignKey: "chat_id" });
@@ -30,7 +31,7 @@ Message.belongsTo(User, { foreignKey: "user_id" });
 
 // const syncModels = async () => {
 //   try {
-//     await sequelize.sync({ force: false });
+//     await sequelize.sync({ force: true });
 //     console.log("Models have been synchronized with database");
 //   } catch (error) {
 //     console.error(error);
