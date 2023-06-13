@@ -1,25 +1,7 @@
 # Project Title: Dislord
 ## Project description
-Dislord is an open-source, (real-time in future) chat application built with NodeJS, ExpressJS and React. It allows users to create chats and send messages. The project implements signup and login system.
-## Main features
-- User authentication: users can sign up, log in and log out securely.
-- Chats: user is able to make a chat with other one.
-- Messages: users can send messages in chats they are in.
-## Getting started
-To get started working with Dislord, follow these steps please:
-1. Download the repository or clone it using `git clone https://github.com/lite1pal/dislordAPI.git`
-2. Being in the project's folder, install third-party modules: `npm install`
-3. Start the server with `npm run start` or if all the time restarting the server after changing lines is not an option, then `nodemon server.js` is the right way
-4. Open a browser and navigate to `http://localhost:4001`
-
-## The following endpoints are available in Dislord API
-| Endpoint               | Method | Description                       |
-| --------               | ------ |    -------                        |
-| */api/users*           | GET    | Retrieve users  |
-| */api/users/:userId*    | PUT    | Update a specific user            |
-| */api/users/signup*      | POST  | Create a new user |
-| */api/users/login*       | POST  | Log a user in     |
-| */api/chats*    | GET   | Retrieve chats    |
-| */api/chats/:user1_id/:user2_id* | POST  | Create a new chat between 2 users |
-| */api/messages/:chatId* | GET | Retrieve messages from a chat |
-| */api/messages/:chatId/:userId* | POST | Create a new message from a user in a chat he is in |
+Dislord is a real-time chat application built using Typescript, NodeJS, Express, React and PostgreSQL. It gives you an opportunity to create a chat with your friend and discuss all your favourite movies or games. Just sign in quickly via Google, it takes 2 clicks and around 5 seconds to get in and you are ready for your conversation!
+## What does the project consist of?
+- Developed Google authentication utilizing the packages providing by Google to add it upon and into React code. This approach is a must-have nowadays as nobody likes to spend several minutes filling those inputs to sign up an account, what's worse - making a new password up each time for a new website, it's horrible. So Google as always helps us out with that problem.
+- Initially, the project was made with Javascript, as I was just learning and not aware of better ways like Typescript (Man, after trying it out, I am not sure I will ever return to pure Javascript). It's led to plenty of issues further the way, new annoying bugs out of nowhere. After a bit of suffering, I've decided to put Typescript on instead of Javascript. It took some time and a bit of my nerves, but on the other hand, I had fun doing it since it is hard and dangerous sometimes so I liked it.
+- The same with Postgres, started with communicating to database using direct queries, but then got that it's time-consuming and not secure at all, so the solution came to add Sequelize and I don't regret I did at any rate.
